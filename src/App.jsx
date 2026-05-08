@@ -443,7 +443,7 @@ function getFavoriteTransitions(favoriteWorkshops) {
     const walkMinutes = getWalkingTime(from.Room_Group, to.Room_Group);
     const sameVenue = from.Room_Group === to.Room_Group;
 
-    if (!sameVenue || gapMinutes <= 15) {
+    if (gapMinutes >= 0 && (!sameVenue || gapMinutes <= 15)) {
       transitions.push({ from, to, gapMinutes, walkMinutes, sameVenue });
     }
   }
