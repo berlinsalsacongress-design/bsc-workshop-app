@@ -485,7 +485,25 @@ function FavoriteTransitions({ transitions }) {
   );
 }
 
+const WORKSHOP_EVENT_DATES = {
+  Friday: "2026-08-28",
+  Saturday: "2026-08-29",
+  Sunday: "2026-08-30",
+};
+
+function getLocalDateString(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 function getWorkshopStatus(workshop) {
+  const eventDate = WORKSHOP_EVENT_DATES[workshop.Day];
+  const todayDate = getLocalDateString();
+
+  if (!eventDate || eventDate !== todayDate) return null;
+
   const now = new Date();
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
   const [startHour, startMinute] = (workshop.Start_Time || "00:00").split(":").map(Number);
@@ -1070,7 +1088,7 @@ function artistMatchesWorkshop(artistName, workshop) {
   return workshop.Artist_1 === artistName || workshop.Artist_2 === artistName;
 }
 
-function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavorite, artistsByName, locationsByGroup, openWorkshopDetails, onShareWorkshop }) {
+function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavorite, artistsByName, locationsByGroup, openWorkshopDetails, openLocation, onShareWorkshop }) {
   if (!artist) return null;
   const artistWorkshops = workshops
     .filter((workshop) => artistMatchesWorkshop(artist.Artist_Name, workshop))
@@ -1101,7 +1119,7 @@ function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavor
           {artistWorkshops.length ? (
             <div className="grid gap-3">
               {artistWorkshops.map((workshop) => (
-                <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={openWorkshopDetails} openLocation={() => {}} onShareWorkshop={onShareWorkshop} />
+                <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={openWorkshopDetails} openLocation={openLocation} onShareWorkshop={onShareWorkshop} />
               ))}
             </div>
           ) : (
@@ -1538,7 +1556,38 @@ export default function App() {
   }, []);
 
   const artistsByName = useMemo(() => Object.fromEntries(artists.map((artist) => [artist.Artist_Name, artist])), [artists]);
-  const locationsByGroup = useMemo(() => Object.fromEntries(locations.map((location) => [location.Location_Group || location.Location_Name, location])), [locations]);
+  const locationsByGroup = useMemo(() => {
+    const map = {};
+    locations.forEach((location) => {
+      if (location.Location_Group) map[location.Location_Group] = location;
+      if (location.Location_Name) map[location.Location_Name] = location;
+    });
+    return map;
+  }, [locations]);
+
+  const displayLocations = useMemo(() => {
+    const preferredVenueNames = ["Tempodrom", "Sporthall", "Aletto Hotel", "Holiday Inn Express"];
+    const byName = new Map();
+
+    locations.forEach((location) => {
+      const name = location.Location_Name || location.Location_Group;
+      const group = location.Location_Group || location.Location_Name;
+      const isMainVenue = preferredVenueNames.includes(name) || name === group;
+
+      if (isMainVenue && name && !byName.has(name)) {
+        byName.set(name, { ...location, Location_Name: name, Location_Group: group });
+      }
+    });
+
+    preferredVenueNames.forEach((name) => {
+      if (!byName.has(name)) {
+        const fallback = fallbackLocations.find((location) => location.Location_Name === name);
+        if (fallback) byName.set(name, fallback);
+      }
+    });
+
+    return Array.from(byName.values()).sort((a, b) => preferredVenueNames.indexOf(a.Location_Name) - preferredVenueNames.indexOf(b.Location_Name));
+  }, [locations]);
   const categories = useMemo(() => {
     return [
       "Salsa",
@@ -1560,11 +1609,12 @@ export default function App() {
       const matchesSearch = !search || content.includes(search);
       const matchesCategory = category === "All" || workshop.Category === category;
       const matchesDay = selectedDay === "All" || workshop.Day === selectedDay;
-      const matchesLevel = levelFilter === "All" || workshop.Level === levelFilter;
+      const fieldContains = (fieldValue, filterValue) => String(fieldValue || "").toLowerCase().includes(String(filterValue || "").toLowerCase());
+      const matchesLevel = levelFilter === "All" || fieldContains(workshop.Level, levelFilter);
       const matchesLocation = locationFilter === "All" || workshop.Room_Group === locationFilter;
       const matchesPartnerwork = partnerworkFilter === "All" || workshop.Partnerwork === partnerworkFilter;
       const matchesSignup = signupFilter === "All" || (signupFilter === "Prior Sign Up Required" ? workshop.Signup_Required === "Yes" : workshop.Signup_Required !== "Yes");
-      const matchesStyle = styleFilter === "All" || workshop.Style === styleFilter;
+      const matchesStyle = styleFilter === "All" || fieldContains(workshop.Style, styleFilter);
       return matchesSearch && matchesCategory && matchesDay && matchesLevel && matchesLocation && matchesPartnerwork && matchesSignup && matchesStyle;
     });
   }, [workshops, query, category, selectedDay, levelFilter, locationFilter, partnerworkFilter, signupFilter, styleFilter]);
@@ -1655,7 +1705,7 @@ export default function App() {
             <div className="mt-8 grid gap-3 md:grid-cols-4">
               <div className="rounded-2xl border border-white/10 bg-black/30 p-4"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Current focus</p><p className="mt-2 text-lg font-semibold text-white">Today Schedule</p><p className="mt-1 text-sm text-zinc-400">Quick access to all workshops happening today.</p></div>
               <div className="rounded-2xl border border-white/10 bg-black/30 p-4"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Favorites</p><p className="mt-2 text-lg font-semibold text-white">{favorites.length} saved</p><p className="mt-1 text-sm text-zinc-400">Build your personal weekend plan.</p></div>
-              <div className="rounded-2xl border border-white/10 bg-black/30 p-4"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Locations</p><p className="mt-2 text-lg font-semibold text-white">{locations.length} venues</p><p className="mt-1 text-sm text-zinc-400">Google Maps included.</p></div>
+              <div className="rounded-2xl border border-white/10 bg-black/30 p-4"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Locations</p><p className="mt-2 text-lg font-semibold text-white">{displayLocations.length} venues</p><p className="mt-1 text-sm text-zinc-400">Google Maps included.</p></div>
               <div className="rounded-2xl border border-white/10 bg-black/30 p-4"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Conflicts</p><p className="mt-2 text-lg font-semibold text-white">{favoriteConflicts.length}</p><p className="mt-1 text-sm text-zinc-400">Overlapping favorites detected.</p></div>
             </div>
           </div>
@@ -1728,10 +1778,10 @@ export default function App() {
             </div>
 
             <div className="mt-6 grid gap-5">
-              {locations.map((location) => (
+              {displayLocations.map((location) => (
                 <div id={`location-${slugify(location.Location_Name)}`} key={location.Location_Name} className="scroll-mt-24 overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-zinc-950 via-black to-zinc-950">
                   <div className="flex h-44 items-center justify-center bg-gradient-to-br from-[#80045d]/30 via-black to-[#194d2d]/30 text-center"><div><div className="text-4xl">📍</div><p className="mt-4 text-sm uppercase tracking-[0.25em] text-zinc-300">Venue Map</p></div></div>
-                  <div className="p-5"><h3 className="text-2xl font-bold text-white">{location.Location_Name}</h3><p className="mt-2 text-sm text-zinc-400">{location.Address}</p><p className="mt-3 text-sm leading-6 text-zinc-300">{location.Description}</p><WalkingTimeChips locationName={location.Location_Name} allLocations={locations} />{location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">Open in Google Maps {icon("external")}</a> : null}</div>
+                  <div className="p-5"><h3 className="text-2xl font-bold text-white">{location.Location_Name}</h3><p className="mt-2 text-sm text-zinc-400">{location.Address}</p><p className="mt-3 text-sm leading-6 text-zinc-300">{location.Description}</p><WalkingTimeChips locationName={location.Location_Name} allLocations={displayLocations} />{location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">Open in Google Maps {icon("external")}</a> : null}</div>
                 </div>
               ))}
             </div>
@@ -1839,7 +1889,7 @@ export default function App() {
 
       <WorkshopDetailsModal workshop={selectedWorkshop} onClose={() => setSelectedWorkshop(null)} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} />
 
-      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} onShareWorkshop={handleShareWorkshop} />
+      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} />
 
       <StoryCardModal open={storyOpen} onClose={() => setStoryOpen(false)} stats={congressStats} personality={congressPersonality} />
 
