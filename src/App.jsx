@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-
+import "./index.css";
 const CSV_URLS = {
   workshops: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTokxKzviEcDBLh2UGUImhc7_ljyfNvdt2E7vHwHLSO8Cvap_yyzMpm0VblZKjs_Y7we4hh_hYWz7Bw/pub?gid=0&single=true&output=csv",
   artists: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTokxKzviEcDBLh2UGUImhc7_ljyfNvdt2E7vHwHLSO8Cvap_yyzMpm0VblZKjs_Y7we4hh_hYWz7Bw/pub?gid=1358673515&single=true&output=csv",
