@@ -1198,7 +1198,7 @@ function TempodromMiniMap() {
 
         <div className="overflow-hidden rounded-[28px] border border-white/10 bg-black/30 p-3">
           <img
-            src="/tempodrom-map-final.png"
+            src="/Tempodrom Map 2026.png"
             alt="Tempodrom Orientation Map"
             className="w-full rounded-[22px] object-contain"
           />
@@ -1854,7 +1854,12 @@ export default function App() {
     </div>
   ))}
 </div>
-          <div>
+          </div>
+      </div>
+    ) : null}
+
+    {activeTab === "info" ? (
+      <div>
             <Hero eyebrow="One Family" title="Berlin Salsacongress 2026">Your practical workshop companion for the congress weekend. Build your personal schedule, explore artists, navigate venues and enjoy the magic of social dancing together.</Hero>
 
             <WeatherCard weather={weather} loading={weatherLoading} error={weatherError} />
