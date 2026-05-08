@@ -1826,7 +1826,7 @@ export default function App() {
             <p className="mt-2 text-sm text-zinc-400">{location.Address}</p>
             <p className="mt-3 text-sm leading-6 text-zinc-300">{location.Description}</p>
 
-            {location.Map_Image ? (
+            {location.Map_Image && location.Location_Name !== "Tempodrom" ? (
               <div className="mt-4 overflow-hidden rounded-2xl border border-white/10">
                 <img
                   src={location.Map_Image}
