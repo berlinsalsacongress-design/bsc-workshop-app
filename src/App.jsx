@@ -430,7 +430,7 @@ function getFavoriteTransitions(favoriteWorkshops) {
     .slice()
     .sort((a, b) => {
       if (a.Day !== b.Day) return ["Friday", "Saturday", "Sunday"].indexOf(a.Day) - ["Friday", "Saturday", "Sunday"].indexOf(b.Day);
-      return Number(a.Sort_Index || 0) - Number(b.Sort_Index || 0);
+      return timeToMinutes(a.Start_Time) - timeToMinutes(b.Start_Time);
     });
 
   const transitions = [];
