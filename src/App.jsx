@@ -1145,18 +1145,34 @@ function groupByDayAndSlot(workshops) {
 }
 
 function findTimeConflicts(workshops) {
-  const grouped = new Map();
-  workshops.forEach((workshop) => {
-    const key = `${workshop.Day}-${workshop.Start_Time}`;
-    if (!grouped.has(key)) grouped.set(key, []);
-    grouped.get(key).push(workshop);
-  });
-  return Array.from(grouped.entries())
-    .filter(([, items]) => items.length > 1)
-    .map(([key, items]) => {
-      const [day, startTime] = key.split("-");
-      return { day, startTime, items };
-    });
+  const conflicts = [];
+
+  for (let i = 0; i < workshops.length; i++) {
+    for (let j = i + 1; j < workshops.length; j++) {
+      const a = workshops[i];
+      const b = workshops[j];
+
+      if (a.Day !== b.Day) continue;
+
+      const aStart = timeToMinutes(a.Start_Time);
+      const aEnd = timeToMinutes(a.End_Time);
+
+      const bStart = timeToMinutes(b.Start_Time);
+      const bEnd = timeToMinutes(b.End_Time);
+
+      const overlaps = aStart < bEnd && bStart < aEnd;
+
+      if (overlaps) {
+        conflicts.push({
+          day: a.Day,
+          startTime: `${a.Start_Time} / ${b.Start_Time}`,
+          items: [a, b],
+        });
+      }
+    }
+  }
+
+  return conflicts;
 }
 
 function ConflictWarnings({ conflicts }) {
