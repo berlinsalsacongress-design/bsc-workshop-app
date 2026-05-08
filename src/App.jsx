@@ -1804,18 +1804,56 @@ export default function App() {
               <TempodromMiniMap />
             </div>
 
-            <div className="mt-6 grid gap-5">
-              {displayLocations.map((location) => (
-                <div id={`location-${slugify(location.Location_Name)}`} key={location.Location_Name} className="scroll-mt-24 overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-zinc-950 via-black to-zinc-950">
-                  <div className="flex h-44 items-center justify-center bg-gradient-to-br from-[#80045d]/30 via-black to-[#194d2d]/30 text-center"><div><div className="text-4xl">📍</div><p className="mt-4 text-sm uppercase tracking-[0.25em] text-zinc-300">Venue Map</p></div></div>
-                  <div className="p-5"><h3 className="text-2xl font-bold text-white">{location.Location_Name}</h3><p className="mt-2 text-sm text-zinc-400">{location.Address}</p><p className="mt-3 text-sm leading-6 text-zinc-300">{location.Description}</p><WalkingTimeChips locationName={location.Location_Name} allLocations={displayLocations} />{location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">Open in Google Maps {icon("external")}</a> : null}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
+           <div className="mt-6 grid gap-5">
+  {displayLocations.map((location) => (
+    <div id={`location-${slugify(location.Location_Name)}`} key={location.Location_Name} className="scroll-mt-24 overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-zinc-950 via-black to-zinc-950">
+      <div className="flex h-44 items-center justify-center bg-gradient-to-br from-[#80045d]/30 via-black to-[#194d2d]/30 text-center">
+        <div>
+          <div className="text-4xl">📍</div>
+          <p className="mt-4 text-sm uppercase tracking-[0.25em] text-zinc-300">Venue Map</p>
+        </div>
+      </div>
 
-        {activeTab === "info" ? (
+      <div className="p-5">
+        <h3 className="text-2xl font-bold text-white">{location.Location_Name}</h3>
+
+        <p className="mt-2 text-sm text-zinc-400">
+          {location.Address}
+        </p>
+
+        <p className="mt-3 text-sm leading-6 text-zinc-300">
+          {location.Description}
+        </p>
+
+        {location.Map_Image && (
+          <div className="mt-4 overflow-hidden rounded-2xl border border-white/10">
+            <img
+              src={location.Map_Image}
+              alt={`${location.Location_Name} map`}
+              className="w-full object-cover"
+            />
+          </div>
+        )}
+
+        <WalkingTimeChips
+          locationName={location.Location_Name}
+          allLocations={displayLocations}
+        />
+
+        {location.Google_Maps_URL ? (
+          <a
+            href={location.Google_Maps_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-5 inline-flex rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white"
+          >
+            Open in Google Maps {icon("external")}
+          </a>
+        ) : null}
+      </div>
+    </div>
+  ))}
+</div>
           <div>
             <Hero eyebrow="One Family" title="Berlin Salsacongress 2026">Your practical workshop companion for the congress weekend. Build your personal schedule, explore artists, navigate venues and enjoy the magic of social dancing together.</Hero>
 
