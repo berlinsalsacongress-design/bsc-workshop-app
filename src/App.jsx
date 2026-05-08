@@ -1659,12 +1659,18 @@ export default function App() {
   }
 
   function openLocationFromWorkshop(locationName) {
+    const canonicalLocation = String(locationName || "").toLowerCase().includes("tempodrom") ? "Tempodrom" : locationName;
+
+    setSelectedWorkshop(null);
+    setSelectedArtist(null);
+    setStoryOpen(false);
     setActiveTab("locations");
+
     window.setTimeout(() => {
-      const targetId = locationName === "Tempodrom" ? "tempodrom-map" : `location-${slugify(locationName)}`;
+      const targetId = canonicalLocation === "Tempodrom" ? "tempodrom-map" : `location-${slugify(canonicalLocation)}`;
       const element = document.getElementById(targetId);
       if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 120);
+    }, 180);
   }
 
   async function handleShareWorkshop(workshop) {
