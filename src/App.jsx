@@ -1567,26 +1567,47 @@ export default function App() {
 
   const displayLocations = useMemo(() => {
     const preferredVenueNames = ["Tempodrom", "Sporthall", "Aletto Hotel", "Holiday Inn Express"];
-    const byName = new Map();
+
+    function canonicalVenueName(location) {
+      const value = String(location.Location_Group || location.Location_Name || "").trim();
+      const lower = value.toLowerCase();
+
+      if (lower.includes("tempodrom") || lower.includes("big arena") || lower.includes("small arena") || lower.includes("restaurant") || lower.includes("seminar")) return "Tempodrom";
+      if (lower.includes("sport")) return "Sporthall";
+      if (lower.includes("aletto")) return "Aletto Hotel";
+      if (lower.includes("holiday")) return "Holiday Inn Express";
+
+      return value;
+    }
+
+    const byVenue = new Map();
 
     locations.forEach((location) => {
-      const name = location.Location_Name || location.Location_Group;
-      const group = location.Location_Group || location.Location_Name;
-      const isMainVenue = preferredVenueNames.includes(name) || name === group;
+      const canonicalName = canonicalVenueName(location);
+      if (!preferredVenueNames.includes(canonicalName)) return;
 
-      if (isMainVenue && name && !byName.has(name)) {
-        byName.set(name, { ...location, Location_Name: name, Location_Group: group });
+      if (!byVenue.has(canonicalName)) {
+        const fallback = fallbackLocations.find((item) => item.Location_Name === canonicalName) || {};
+        byVenue.set(canonicalName, {
+          ...fallback,
+          ...location,
+          Location_Name: canonicalName,
+          Location_Group: canonicalName,
+          Address: location.Address || fallback.Address || "Berlin",
+          Google_Maps_URL: location.Google_Maps_URL || fallback.Google_Maps_URL || "",
+          Description: fallback.Description || location.Description || "Congress venue.",
+        });
       }
     });
 
     preferredVenueNames.forEach((name) => {
-      if (!byName.has(name)) {
+      if (!byVenue.has(name)) {
         const fallback = fallbackLocations.find((location) => location.Location_Name === name);
-        if (fallback) byName.set(name, fallback);
+        if (fallback) byVenue.set(name, fallback);
       }
     });
 
-    return Array.from(byName.values()).sort((a, b) => preferredVenueNames.indexOf(a.Location_Name) - preferredVenueNames.indexOf(b.Location_Name));
+    return preferredVenueNames.map((name) => byVenue.get(name)).filter(Boolean);
   }, [locations]);
   const categories = useMemo(() => {
     return [
