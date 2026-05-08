@@ -26,7 +26,7 @@ const fallbackArtists = [
 ];
 
 const fallbackLocations = [
-  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "...", Description: "Main venue with socials and workshops." },
+  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://maps.app.goo.gl/aeq6hKUrwpp5cFNJ8", Description: "Main venue with socials and workshops." },
   { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/WwP5o1f6K7u8n9YQ8", Description: "Nearby workshop venue." },
   { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/h5L4kM2P9sT7xYxB9", Description: "Additional nearby congress location." },
   { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/r7Gx4NwY8mQ2eF7C7", Description: "Additional workshop area." },
