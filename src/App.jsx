@@ -1594,7 +1594,7 @@ export default function App() {
           Location_Name: canonicalName,
           Location_Group: canonicalName,
           Address: location.Address || fallback.Address || "Berlin",
-          Google_Maps_URL: location.Google_Maps_URL || fallback.Google_Maps_URL || "",
+          Google_Maps_URL: fallback.Google_Maps_URL || location.Google_Maps_URL || "",
           Description: fallback.Description || location.Description || "Congress venue.",
         });
       }
