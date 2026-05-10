@@ -655,9 +655,15 @@ const capacityIcon =
               {workshop.Signup_Required === "Yes" ? <Badge soft>Prior Sign Up Required</Badge> : null}
               <div className="mt-3 w-full">
   <div className="mb-1 flex items-center justify-between text-[11px] text-zinc-300">
-    <span>Saved by dancers</span>
-    <span>{liveCapacity}</span>
-  </div>
+  <span>
+    {capacityIcon} {capacityLabel}
+  </span>
+
+  <span>
+    {liveCapacity}
+    {roomCapacity ? ` / ${roomCapacity}` : ""}
+  </span>
+</div>
 
   <div className="h-2 overflow-hidden rounded-full bg-white/10">
     <div
