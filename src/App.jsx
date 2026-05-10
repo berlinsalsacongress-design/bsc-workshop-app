@@ -1851,11 +1851,20 @@ const downloadStoryCard = async () => {
                 <div key={`${items[0]?.Day}-${items[0]?.Start_Time}`}>
                   <h3 className="mb-3 text-sm font-semibold text-[#d780bd]">{icon("clock")} {items[0]?.Start_Time}–{items[0]?.End_Time}</h3>
                   <div className="grid gap-3 md:grid-cols-2">
-                    {items.map((workshop) => <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} reminderSet={reminders.includes(workshop.Workshop_ID)} showReminder={activeTab === "mine"} />)}
-                  </div>
-                </div>
-              ))}
-            </div>
+                    {items.map((workshop) => (
+                      <WorkshopCard
+                        key={workshop.Workshop_ID}
+                        workshop={workshop}
+                        capacityData={capacityData}
+                        isFavorite={favorites.includes(workshop.Workshop_ID)}
+                        toggleFavorite={toggleFavorite}
+                        artistsByName={artistsByName}
+                        locationsByGroup={locationsByGroup}
+                        openDetails={setSelectedWorkshop}
+                        openLocation={openLocationFromWorkshop}
+                      />
+                    ))}
+                   </div>
           </section>
         ) : null)}
       </div>
