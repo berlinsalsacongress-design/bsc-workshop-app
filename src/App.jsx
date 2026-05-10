@@ -1863,18 +1863,28 @@ const downloadStoryCard = async () => {
 
   const currentCapacity =
     workshop.current_saved || 0;
-
+  const roomCapacity =
+  capacityData[id]?.room_capacity || 100;
   const newCapacity =
     alreadyFavorite
       ? Math.max(currentCapacity - 1, 0)
       : currentCapacity + 1;
+    setCapacityData((current) => ({
+  ...current,
+  [id]: {
+    ...current[id],
+    workshop_id: id,
+    current_saved: newCapacity,
+    room_capacity: roomCapacity,
+  },
+}));
 
   const { error } = await supabase
     .from("workshop_capacity")
     .upsert({
       workshop_id: id,
       current_saved: newCapacity,
-      room_capacity: 100,
+      room_capacity: roomCapacity,
     });
 
   console.log("CAPACITY UPDATE:", newCapacity);
