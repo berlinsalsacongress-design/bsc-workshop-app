@@ -1522,11 +1522,38 @@ export default function App() {
     });
 
     setCapacityData(mappedData);
-
     console.log("CAPACITY DATA:", mappedData);
   }
 
   loadCapacityData();
+
+  const capacityChannel = supabase
+    .channel("workshop-capacity-live")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "workshop_capacity",
+      },
+      (payload) => {
+        console.log("REALTIME CAPACITY UPDATE:", payload);
+
+        const updatedItem = payload.new;
+
+        if (!updatedItem?.workshop_id) return;
+
+        setCapacityData((current) => ({
+          ...current,
+          [updatedItem.workshop_id]: updatedItem,
+        }));
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(capacityChannel);
+  };
 }, []);
   const [activeTab, setActiveTab] = useState("today");
   const [workshops, setWorkshops] = useState(fallbackWorkshops);
