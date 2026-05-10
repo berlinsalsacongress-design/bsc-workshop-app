@@ -660,9 +660,8 @@ const capacityIcon =
   </span>
 
   <span>
-    {liveCapacity}
-    {roomCapacity ? ` / ${roomCapacity}` : ""}
-  </span>
+  {capacityPercent}%
+</span>
 </div>
 
   <div className="h-2 overflow-hidden rounded-full bg-white/10">
