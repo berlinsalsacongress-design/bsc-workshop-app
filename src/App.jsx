@@ -936,7 +936,7 @@ function CongressStats({ stats, personality, onOpenStory }) {
   );
 }
 
-function StoryCardModal({ open, onClose, stats, personality }) {
+function StoryCardModal({ open, onClose, stats, personality, shareCardRef, downloadStoryCard }) {
   if (!open) return null;
 
   return (
