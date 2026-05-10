@@ -1462,16 +1462,7 @@ export default function App() {
 
     console.log("SUPABASE TEST:", data);
     console.log("SUPABASE ERROR:", error);
-    const { data: insertData, error: insertError } = await supabase
-  .from("workshop_capacity")
-  .upsert({
-    workshop_id: "TEST001",
-    current_saved: 42,
-    room_capacity: 100,
-  });
-
-console.log("INSERT TEST:", insertData);
-console.log("INSERT ERROR:", insertError);
+     
   }
 
   testSupabase();
