@@ -1862,7 +1862,7 @@ const downloadStoryCard = async () => {
   if (!workshop) return;
 
   const currentCapacity =
-    workshop.current_saved || 0;
+  capacityData[id]?.current_saved || 0;
   const roomCapacity =
   capacityData[id]?.room_capacity || 100;
   const newCapacity =
