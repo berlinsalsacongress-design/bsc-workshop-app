@@ -1417,7 +1417,25 @@ export default function App() {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
+  const shareCardRef = React.useRef(null);
 
+const downloadStoryCard = async () => {
+  if (!shareCardRef.current) return;
+
+  try {
+    const dataUrl = await htmlToImage.toPng(shareCardRef.current, {
+      pixelRatio: 3,
+      backgroundColor: "#000000",
+    });
+
+    const link = document.createElement("a");
+    link.download = "bsc-story-card.png";
+    link.href = dataUrl;
+    link.click();
+  } catch (error) {
+    console.error("Error generating image:", error);
+  }
+};
   useEffect(() => {
     const saved = localStorage.getItem("bsc-favorites");
     if (saved) setFavorites(JSON.parse(saved));
