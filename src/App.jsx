@@ -947,7 +947,10 @@ function StoryCardModal({ open, onClose, stats, personality }) {
           <button onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-white">×</button>
         </div>
 
-        <div className="relative aspect-[9/16] overflow-hidden rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d] via-black to-[#160010] p-6">
+        <div
+  ref={shareCardRef}
+  className="relative aspect-[9/16] overflow-hidden rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d] via-black to-[#160010] p-6"
+        >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,#ffffff22,transparent_35%),radial-gradient(circle_at_bottom_left,#80045d55,transparent_45%)]" />
           <div className="relative z-10 flex h-full flex-col justify-between">
             <div>
@@ -971,7 +974,12 @@ function StoryCardModal({ open, onClose, stats, personality }) {
             </div>
           </div>
         </div>
-
+<button
+  onClick={downloadStoryCard}
+  className="mt-4 w-full rounded-full bg-[#80045d] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#a00074]"
+>
+  Download Story Card
+</button>
         <p className="mt-4 text-center text-xs leading-5 text-zinc-400">
           In the final app this can become a downloadable/shareable 9:16 image for Instagram Stories.
         </p>
