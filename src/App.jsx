@@ -1471,6 +1471,7 @@ export default function App() {
   const [workshops, setWorkshops] = useState(fallbackWorkshops);
   const [artists, setArtists] = useState(fallbackArtists);
   const [locations, setLocations] = useState(fallbackLocations);
+  const [capacityData, setCapacityData] = useState({});
   const [favorites, setFavorites] = useState([]);
   const [lastUpdated, setLastUpdated] = useState("");
   const [dataStatus, setDataStatus] = useState("loading");
