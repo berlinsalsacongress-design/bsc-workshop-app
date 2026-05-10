@@ -1767,9 +1767,39 @@ const downloadStoryCard = async () => {
   const todayWorkshops = filteredWorkshops.filter((workshop) => workshop.Day === todayDay);
   const nextSlot = todayWorkshops[0]?.Start_Time || "15:30";
 
-  function toggleFavorite(id) {
-    setFavorites((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
-  }
+  async function toggleFavorite(id) {
+
+  const alreadyFavorite = favorites.includes(id);
+
+  setFavorites((current) =>
+    alreadyFavorite
+      ? current.filter((item) => item !== id)
+      : [...current, id]
+  );
+
+  const workshop = workshops.find(w => w.Workshop_ID === id);
+
+  if (!workshop) return;
+
+  const currentCapacity =
+    workshop.current_saved || 0;
+
+  const newCapacity =
+    alreadyFavorite
+      ? Math.max(currentCapacity - 1, 0)
+      : currentCapacity + 1;
+
+  const { error } = await supabase
+    .from("workshop_capacity")
+    .upsert({
+      workshop_id: id,
+      current_saved: newCapacity,
+      room_capacity: 100,
+    });
+
+  console.log("CAPACITY UPDATE:", newCapacity);
+  console.log("CAPACITY ERROR:", error);
+}
 
   function toggleReminder(id) {
     setReminders((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
