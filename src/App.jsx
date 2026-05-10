@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import * as htmlToImage from "html-to-image";
+import { createClient } from "@supabase/supabase-js";
 const CSV_URLS = {
   workshops: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTokxKzviEcDBLh2UGUImhc7_ljyfNvdt2E7vHwHLSO8Cvap_yyzMpm0VblZKjs_Y7we4hh_hYWz7Bw/pub?gid=0&single=true&output=csv",
   artists: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTokxKzviEcDBLh2UGUImhc7_ljyfNvdt2E7vHwHLSO8Cvap_yyzMpm0VblZKjs_Y7we4hh_hYWz7Bw/pub?gid=1358673515&single=true&output=csv",
@@ -7,6 +8,15 @@ const CSV_URLS = {
 };
 const ADVANCED_LEVEL_ASSESSMENT_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSdVehpLy7zVnFIDcS6E1RdWjhQwpqA0tOui0-JXOlkkL-CRJA/viewform?usp=sharing&ouid=118189387469591371378";
+const SUPABASE_URL = "https://nskzzqzioovzgamwyxyl.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "sb_publishable_FWvh6KpEDlyHxg-1FrzjQA_JcXz7E2r";
+
+const supabase = createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 const fallbackWorkshops = [
   { Workshop_ID: "F001", Day: "Friday", Start_Time: "15:30", End_Time: "18:00", Room: "Restaurant", Room_Group: "Tempodrom", Sort_Index: "1", Workshop_Title: "Social Dance Training", Artist_1: "Fuquan", Artist_2: "Candace", Level: "Advanced", Category: "Salsa", Style: "On2", Partnerwork: "Yes", Signup_Required: "Yes", Notes: "Not included in regular passes" },
   { Workshop_ID: "F002", Day: "Friday", Start_Time: "15:30", End_Time: "16:30", Room: "Big Arena", Room_Group: "Tempodrom", Sort_Index: "1", Workshop_Title: "Partnerwork on2", Artist_1: "Ernesto", Artist_2: "Denisse", Level: "Advanced", Category: "Mambo", Style: "On2", Partnerwork: "Yes", Signup_Required: "No", Notes: "" },
