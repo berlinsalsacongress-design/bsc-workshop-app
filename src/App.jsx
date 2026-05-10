@@ -1454,6 +1454,18 @@ function WeatherCard({ weather, loading, error }) {
 }
 
 export default function App() {
+  useEffect(() => {
+  async function testSupabase() {
+    const { data, error } = await supabase
+      .from("workshop_capacity")
+      .select("*");
+
+    console.log("SUPABASE TEST:", data);
+    console.log("SUPABASE ERROR:", error);
+  }
+
+  testSupabase();
+}, []);
   const [activeTab, setActiveTab] = useState("today");
   const [workshops, setWorkshops] = useState(fallbackWorkshops);
   const [artists, setArtists] = useState(fallbackArtists);
