@@ -1999,7 +1999,14 @@ const downloadStoryCard = async () => {
 
       <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} />
 
-      <StoryCardModal open={storyOpen} onClose={() => setStoryOpen(false)} stats={congressStats} personality={congressPersonality} />
+      <StoryCardModal
+  open={storyOpen}
+  onClose={() => setStoryOpen(false)}
+  stats={congressStats}
+  personality={congressPersonality}
+  shareCardRef={shareCardRef}
+  downloadStoryCard={downloadStoryCard}
+/>
 
       <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
     </div>
