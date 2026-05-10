@@ -1070,7 +1070,28 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
         </div>
 
         {workshop.Notes ? <div className="mt-5 rounded-2xl border border-[#80045d]/20 bg-[#80045d]/10 p-4 text-sm text-pink-100">{workshop.Notes}</div> : null}
+        {workshop.Level === "Advanced+" ? (
+  <div className="mt-5 rounded-2xl border border-amber-300/25 bg-amber-300/10 p-4 text-sm text-amber-50">
+    <p className="text-[11px] uppercase tracking-[0.2em] text-amber-200">
+      🎯 Advanced+ Level Assessment
+    </p>
 
+    <p className="mt-2 leading-6">
+      Participation in this Advanced+ workshop is only possible for dancers who
+      successfully passed both the Online Level Assessment and the On-Site Level
+      Assessment during the event.
+    </p>
+
+    <a
+      href={ADVANCED_LEVEL_ASSESSMENT_URL}
+      target="_blank"
+      rel="noreferrer"
+      className="mt-4 inline-flex rounded-full border border-amber-200/20 bg-amber-200/10 px-4 py-2 text-xs font-semibold text-amber-50 transition hover:bg-amber-200/20"
+    >
+      Take Online Level Assessment ↗
+    </a>
+  </div>
+) : null}
         {fullyBooked ? (
           <div className="mt-5 rounded-2xl border border-red-400/25 bg-red-400/10 p-4 text-sm text-red-50">
             <p className="text-[11px] uppercase tracking-[0.2em] text-red-200">Workshop Status</p>
