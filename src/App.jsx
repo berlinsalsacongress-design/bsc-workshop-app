@@ -634,6 +634,25 @@ const capacityPercent =
               {workshop.Style ? <Badge style>{workshop.Style}</Badge> : null}
               <Badge soft>{workshop.Level || "All levels"}</Badge>
               {workshop.Signup_Required === "Yes" ? <Badge soft>Prior Sign Up Required</Badge> : null}
+              <div className="mt-3 w-full">
+  <div className="mb-1 flex items-center justify-between text-[11px] text-zinc-300">
+    <span>Saved by dancers</span>
+    <span>{liveCapacity}</span>
+  </div>
+
+  <div className="h-2 overflow-hidden rounded-full bg-white/10">
+    <div
+      className={`h-full rounded-full transition-all duration-500 ${
+        capacityPercent >= 70
+          ? "bg-red-500"
+          : capacityPercent >= 40
+          ? "bg-yellow-400"
+          : "bg-emerald-400"
+      }`}
+      style={{ width: `${Math.min(capacityPercent, 100)}%` }}
+    />
+  </div>
+</div>
             </div>
             <button onClick={() => openDetails(workshop)} className="text-left"><h3 className="text-lg font-bold leading-tight text-white transition hover:text-pink-100 md:text-xl">{workshop.Workshop_Title}</h3></button>
             <p className="mt-2 text-sm text-zinc-300 md:text-base">{artists.join(" & ")}</p>
