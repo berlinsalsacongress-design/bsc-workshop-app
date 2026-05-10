@@ -604,14 +604,21 @@ async function shareWorkshop(workshop) {
   }
 }
 
-function WorkshopCard({ workshop, isFavorite, toggleFavorite, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, reminderSet = false, showReminder = false }) {
+function WorkshopCard({ workshop, isFavorite, toggleFavorite, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, capacityData, reminderSet = false, showReminder = false }) {
   const artists = namesForWorkshop(workshop);
   const location = locationsByGroup[workshop.Room_Group] || null;
   const status = getWorkshopStatus(workshop);
   const venueColor = getVenueColor(workshop.Room_Group);
   const popularity = getPopularityStatus(workshop, isFavorite);
   const fullyBooked = workshop.Signup_Required === "Yes" && workshop.Fully_Booked === "Yes";
+  const liveCapacity =
+  capacityData[workshop.Workshop_ID]?.current_saved || 0;
 
+const roomCapacity =
+  capacityData[workshop.Workshop_ID]?.room_capacity || 100;
+
+const capacityPercent =
+  Math.round((liveCapacity / roomCapacity) * 100);
   return (
     <div className={`overflow-hidden rounded-[28px] border bg-gradient-to-br ${venueColor} shadow-2xl shadow-black/30 transition hover:border-[#80045d]/50`}>
       <div className="h-1 w-full bg-gradient-to-r from-[#80045d] via-pink-500/70 to-transparent" />
