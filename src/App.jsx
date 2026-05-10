@@ -1841,15 +1841,19 @@ const downloadStoryCard = async () => {
   }
 
   function renderWorkshopList(list) {
-    return (
-      <div className="space-y-6">
-        {groupByDayAndSlot(list).map(({ day, slots }) => slots.length ? (
+  return (
+    <div className="space-y-6">
+      {groupByDayAndSlot(list).map(({ day, slots }) =>
+        slots.length ? (
           <section key={day}>
             <h2 className="mb-3 text-xl font-bold text-white">{day}</h2>
             <div className="space-y-5">
               {slots.map((items) => (
                 <div key={`${items[0]?.Day}-${items[0]?.Start_Time}`}>
-                  <h3 className="mb-3 text-sm font-semibold text-[#d780bd]">{icon("clock")} {items[0]?.Start_Time}–{items[0]?.End_Time}</h3>
+                  <h3 className="mb-3 text-sm font-semibold text-[#d780bd]">
+                    {icon("clock")} {items[0]?.Start_Time}–{items[0]?.End_Time}
+                  </h3>
+
                   <div className="grid gap-3 md:grid-cols-2">
                     {items.map((workshop) => (
                       <WorkshopCard
@@ -1864,12 +1868,16 @@ const downloadStoryCard = async () => {
                         openLocation={openLocationFromWorkshop}
                       />
                     ))}
-                   </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
-        ) : null)}
-      </div>
-    );
-  }
+        ) : null
+      )}
+    </div>
+  );
+}
 
   return (
     <div className="min-h-screen bg-black text-white">
