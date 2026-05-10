@@ -641,9 +641,9 @@ function WorkshopCard({ workshop, isFavorite, toggleFavorite, artistsByName, loc
     </p>
 
     <p className="mt-2 leading-6">
-      This workshop is marked as Advanced+. Please complete the online level
-      assessment before attending to help us maintain the quality and level of
-      the class.
+    Participation in this Advanced+ workshop is only possible for dancers who
+    successfully passed both the Online Level Assessment and the On-Site Level
+    Assessment during the event.
     </p>
 
     <a
