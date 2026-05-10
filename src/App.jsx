@@ -1455,17 +1455,28 @@ function WeatherCard({ weather, loading, error }) {
 
 export default function App() {
   useEffect(() => {
-  async function testSupabase() {
+  async function loadCapacityData() {
     const { data, error } = await supabase
       .from("workshop_capacity")
       .select("*");
 
-    console.log("SUPABASE TEST:", data);
-    console.log("SUPABASE ERROR:", error);
-     
+    if (error) {
+      console.log("LOAD CAPACITY ERROR:", error);
+      return;
+    }
+
+    const mappedData = {};
+
+    data.forEach((item) => {
+      mappedData[item.workshop_id] = item;
+    });
+
+    setCapacityData(mappedData);
+
+    console.log("CAPACITY DATA:", mappedData);
   }
 
-  testSupabase();
+  loadCapacityData();
 }, []);
   const [activeTab, setActiveTab] = useState("today");
   const [workshops, setWorkshops] = useState(fallbackWorkshops);
