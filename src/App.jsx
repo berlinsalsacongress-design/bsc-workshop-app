@@ -619,6 +619,25 @@ const roomCapacity =
 
 const capacityPercent =
   Math.round((liveCapacity / roomCapacity) * 100);
+  const capacityLabel =
+  capacityPercent >= 100
+    ? "Full / Over Capacity"
+    : capacityPercent >= 80
+    ? "Almost Full"
+    : capacityPercent >= 50
+    ? "Filling Fast"
+    : liveCapacity > 0
+    ? "Plenty of Space"
+    : "Be the first to save";
+
+const capacityIcon =
+  capacityPercent >= 80
+    ? "🔥"
+    : capacityPercent >= 50
+    ? "🟡"
+    : liveCapacity > 0
+    ? "🟢"
+    : "✨";
   return (
     <div className={`overflow-hidden rounded-[28px] border bg-gradient-to-br ${venueColor} shadow-2xl shadow-black/30 transition hover:border-[#80045d]/50`}>
       <div className="h-1 w-full bg-gradient-to-r from-[#80045d] via-pink-500/70 to-transparent" />
