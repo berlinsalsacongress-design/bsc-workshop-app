@@ -702,7 +702,7 @@ const totalRatings =
   </span>
 </div>
 ) : null}
-            <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+  <p className="mt-3 text-xs font-medium uppercase tracking-[0.18em] text-zinc-300">
   Rate this workshop
 </p>
             
