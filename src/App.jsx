@@ -1572,10 +1572,27 @@ export default function App() {
     return;
   }
 
-  const mappedRatings = {};
+  const groupedRatings = {};
 
   data.forEach((item) => {
-    mappedRatings[item.workshop_id] = item;
+    if (!groupedRatings[item.workshop_id]) {
+      groupedRatings[item.workshop_id] = {
+        total: 0,
+        count: 0,
+      };
+    }
+
+    groupedRatings[item.workshop_id].total += item.rating;
+    groupedRatings[item.workshop_id].count += 1;
+  });
+
+  const mappedRatings = {};
+
+  Object.entries(groupedRatings).forEach(([workshopId, values]) => {
+    mappedRatings[workshopId] = {
+      average_rating: values.total / values.count,
+      total_ratings: values.count,
+    };
   });
 
   setRatingsData(mappedRatings);
