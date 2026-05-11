@@ -706,7 +706,7 @@ const totalRatings =
   {[1, 2, 3, 4, 5].map((star) => (
     <button
       key={star}
-      className="text-lg text-zinc-500 transition hover:scale-110"
+      className="text-xl text-zinc-400 transition hover:scale-110 hover:text-yellow-300"
     >
       ☆
     </button>
