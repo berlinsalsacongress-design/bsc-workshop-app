@@ -646,7 +646,11 @@ const averageRating =
 
 const totalRatings =
   workshopRatings?.total_ratings || 0;
-  
+  const ratedWorkshops =
+  JSON.parse(localStorage.getItem("ratedWorkshops") || "[]");
+
+const hasRatedWorkshop =
+  ratedWorkshops.includes(workshop.Workshop_ID);
   return (
     <div className={`overflow-hidden rounded-[28px] border bg-gradient-to-br ${venueColor} shadow-2xl shadow-black/30 transition hover:border-[#80045d]/50`}>
       <div className="h-1 w-full bg-gradient-to-r from-[#80045d] via-pink-500/70 to-transparent" />
@@ -710,8 +714,13 @@ const totalRatings =
   {[1, 2, 3, 4, 5].map((star) => (
     <button
   key={star}
+  disabled={hasRatedWorkshop}
   onClick={() => submitWorkshopRating(workshop.Workshop_ID, star)}
-  className="text-xl text-zinc-400 transition hover:scale-110 hover:text-yellow-300">
+  className={`text-xl transition ${
+  hasRatedWorkshop
+    ? "text-yellow-300 cursor-default"
+    : "text-zinc-400 hover:scale-110 hover:text-yellow-300"
+}`}
       ☆
     </button>
   ))}
