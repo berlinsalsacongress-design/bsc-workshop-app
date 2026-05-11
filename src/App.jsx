@@ -638,6 +638,15 @@ const capacityIcon =
     : liveCapacity > 0
     ? "🟢"
     : "✨";
+  const workshopRatings =
+  ratingsData[workshop.Workshop_ID];
+
+const averageRating =
+  workshopRatings?.average_rating || 0;
+
+const totalRatings =
+  workshopRatings?.total_ratings || 0;
+  
   return (
     <div className={`overflow-hidden rounded-[28px] border bg-gradient-to-br ${venueColor} shadow-2xl shadow-black/30 transition hover:border-[#80045d]/50`}>
       <div className="h-1 w-full bg-gradient-to-r from-[#80045d] via-pink-500/70 to-transparent" />
