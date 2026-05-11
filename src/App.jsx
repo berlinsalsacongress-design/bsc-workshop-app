@@ -1880,12 +1880,17 @@ const downloadStoryCard = async () => {
 }));
 
   const { error } = await supabase
-    .from("workshop_capacity")
-    .upsert({
+  .from("workshop_capacity")
+  .upsert(
+    {
       workshop_id: id,
       current_saved: newCapacity,
       room_capacity: roomCapacity,
-    });
+    },
+    {
+      onConflict: "workshop_id",
+    }
+  );
 
   console.log("CAPACITY UPDATE:", newCapacity);
   console.log("CAPACITY ERROR:", error);
