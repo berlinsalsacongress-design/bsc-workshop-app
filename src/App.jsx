@@ -1526,7 +1526,28 @@ export default function App() {
   }
 
   loadCapacityData();
+  async function loadRatingsData() {
+  const { data, error } = await supabase
+    .from("workshop_ratings")
+    .select("*");
 
+  if (error) {
+    console.log("LOAD RATINGS ERROR:", error);
+    return;
+  }
+
+  const mappedRatings = {};
+
+  data.forEach((item) => {
+    mappedRatings[item.workshop_id] = item;
+  });
+
+  setRatingsData(mappedRatings);
+
+  console.log("RATINGS DATA:", mappedRatings);
+}
+
+loadRatingsData();
   const capacityChannel = supabase
     .channel("workshop-capacity-live")
     .on(
