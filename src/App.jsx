@@ -711,9 +711,7 @@ const totalRatings =
     <button
   key={star}
   onClick={() => submitWorkshopRating(workshop.Workshop_ID, star)}
-  className="text-xl text-zinc-400 transition hover:scale-110 hover:text-yellow-300"
->
-    >
+  className="text-xl text-zinc-400 transition hover:scale-110 hover:text-yellow-300">
       ☆
     </button>
   ))}
