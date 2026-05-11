@@ -2244,7 +2244,7 @@ if (ratedWorkshops.includes(workshopId)) {
 ) : null}
     {activeTab === "info" ? (
       <div>
-            <Hero eyebrow="One Family" title="Berlin Salsacongress 2026">Your practical workshop companion for the congress weekend. Build your personal schedule, explore artists, navigate venues and enjoy the magic of social dancing together.</Hero>
+            <Hero eyebrow="One Family" title="Berlin Salsacongress 2026">Your smart congress companion for the weekend. Build your personal schedule, check live workshop capacity, rate workshops, explore artists and enjoy the magic of social dancing together.</Hero>
 
             <WeatherCard weather={weather} loading={weatherLoading} error={weatherError} />
 
