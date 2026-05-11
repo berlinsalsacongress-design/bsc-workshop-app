@@ -709,8 +709,10 @@ const totalRatings =
             <div className="mt-3 flex items-center gap-1">
   {[1, 2, 3, 4, 5].map((star) => (
     <button
-      key={star}
-      className="text-xl text-zinc-400 transition hover:scale-110 hover:text-yellow-300"
+  key={star}
+  onClick={() => submitWorkshopRating(workshop.Workshop_ID, star)}
+  className="text-xl text-zinc-400 transition hover:scale-110 hover:text-yellow-300"
+>
     >
       ☆
     </button>
