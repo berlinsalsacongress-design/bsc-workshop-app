@@ -2254,11 +2254,12 @@ if (ratedWorkshops.includes(workshopId)) {
                 <h3 className="mt-2 text-2xl font-bold text-white">What the app offers</h3>
                 <ul className="mt-4 space-y-3 text-sm leading-6 text-zinc-400">
                   <li>• Personal workshop schedule with favorites</li>
-                  <li>• Smart recommendations based on your dance preferences</li>
-                  <li>• Venue navigation with Google Maps integration</li>
-                  <li>• Walking times between workshops and venues</li>
-                  <li>• Capacity forecasts for popular workshops</li>
-                  <li>• Congress Stats & shareable Story Cards</li>
+                  <li>• Live workshop capacity updates</li>
+                  <li>• Real-time workshop ratings</li>
+                  <li>• Smart venue navigation with Google Maps</li>
+                  <li>• Walking time overview between venues</li>
+                  <li>• Artist discovery and workshop exploration</li>
+                  <li>• Shareable workshop and story features</li>
                 </ul>
               </div>
 
@@ -2266,7 +2267,7 @@ if (ratedWorkshops.includes(workshopId)) {
                 <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">How it works</p>
                 <h3 className="mt-2 text-2xl font-bold text-white">Built for social dancers</h3>
                 <p className="mt-4 text-sm leading-6 text-zinc-400">
-                  Save your favorite workshops, discover artists, navigate easily between venues and create your own smooth congress experience throughout the weekend.
+                  Plan your congress weekend smoothly with live workshop information, smart scheduling tools, and fast venue navigation designed for social dancers.
                 </p>
 
                 <div className="mt-5 flex flex-wrap gap-2">
