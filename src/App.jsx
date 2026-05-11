@@ -604,7 +604,7 @@ async function shareWorkshop(workshop) {
   }
 }
 
-function WorkshopCard({ workshop, isFavorite, toggleFavorite, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, capacityData, ratingsData, reminderSet = false, showReminder = false }) {
+function WorkshopCard({ workshop, isFavorite, toggleFavorite, submitWorkshopRating, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, capacityData, ratingsData, reminderSet = false, showReminder = false }) {
   const artists = namesForWorkshop(workshop);
   const location = locationsByGroup[workshop.Room_Group] || null;
   const status = getWorkshopStatus(workshop);
