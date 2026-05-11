@@ -1954,6 +1954,13 @@ const downloadStoryCard = async () => {
   console.log("CAPACITY ERROR:", error);
 }
 async function submitWorkshopRating(workshopId, rating) {
+  
+  const ratedWorkshops =
+  JSON.parse(localStorage.getItem("ratedWorkshops") || "[]");
+
+if (ratedWorkshops.includes(workshopId)) {
+  return;
+}
   const { error } = await supabase
     .from("workshop_ratings")
     .insert({
