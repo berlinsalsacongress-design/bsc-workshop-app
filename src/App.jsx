@@ -702,6 +702,16 @@ const totalRatings =
   </span>
 </div>
 ) : null}
+            <div className="mt-3 flex items-center gap-1">
+  {[1, 2, 3, 4, 5].map((star) => (
+    <button
+      key={star}
+      className="text-lg text-zinc-500 transition hover:scale-110"
+    >
+      ☆
+    </button>
+  ))}
+</div>
           </div>
           <button onClick={() => toggleFavorite(workshop.Workshop_ID)} className={isFavorite ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#80045d] bg-[#80045d] text-xl text-white" : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-zinc-300"}>
             {isFavorite ? "♥" : "♡"}
