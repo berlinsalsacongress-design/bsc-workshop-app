@@ -609,7 +609,7 @@ function WorkshopCard({ workshop, isFavorite, toggleFavorite, artistsByName, loc
   const location = locationsByGroup[workshop.Room_Group] || null;
   const status = getWorkshopStatus(workshop);
   const venueColor = getVenueColor(workshop.Room_Group);
-  const popularity = getPopularityStatus(workshop, isFavorite);
+  const popularity = null;
   const fullyBooked = workshop.Signup_Required === "Yes" && workshop.Fully_Booked === "Yes";
   const liveCapacity =
   capacityData[workshop.Workshop_ID]?.current_saved || 0;
