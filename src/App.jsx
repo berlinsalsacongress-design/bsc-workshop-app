@@ -1560,6 +1560,7 @@ export default function App() {
   const [artists, setArtists] = useState(fallbackArtists);
   const [locations, setLocations] = useState(fallbackLocations);
   const [capacityData, setCapacityData] = useState({});
+  const [ratingsData, setRatingsData] = useState({});
   const [favorites, setFavorites] = useState([]);
   const [lastUpdated, setLastUpdated] = useState("");
   const [dataStatus, setDataStatus] = useState("loading");
