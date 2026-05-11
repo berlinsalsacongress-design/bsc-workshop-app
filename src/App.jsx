@@ -374,10 +374,15 @@ function FullyBookedBadge({ visible }) {
 
 const WALKING_TIMES = {
   "Tempodrom|Sporthall": 4,
+  "Tempodrom|Aletto": 8,
   "Tempodrom|Aletto Hotel": 8,
   "Tempodrom|Holiday Inn Express": 3,
+
+  "Sporthall|Aletto": 5,
   "Sporthall|Aletto Hotel": 5,
   "Sporthall|Holiday Inn Express": 5,
+
+  "Aletto|Holiday Inn Express": 8,
   "Aletto Hotel|Holiday Inn Express": 8,
 };
 
