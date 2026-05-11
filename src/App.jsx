@@ -1634,10 +1634,24 @@ loadRatingsData();
       }
     )
     .subscribe();
-
+const ratingsChannel = supabase
+  .channel("workshop-ratings-live")
+  .on(
+    "postgres_changes",
+    {
+      event: "*",
+      schema: "public",
+      table: "workshop_ratings",
+    },
+    () => {
+      loadRatingsData();
+    }
+  )
+  .subscribe();
   return () => {
-    supabase.removeChannel(capacityChannel);
-  };
+  supabase.removeChannel(capacityChannel);
+  supabase.removeChannel(ratingsChannel);
+};
 }, []);
   const [activeTab, setActiveTab] = useState("today");
   const [workshops, setWorkshops] = useState(fallbackWorkshops);
