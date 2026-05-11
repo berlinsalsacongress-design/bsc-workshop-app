@@ -2109,7 +2109,7 @@ if (ratedWorkshops.includes(workshopId)) {
         {activeTab === "today" ? (
           <div>
             <Hero eyebrow={`Today · ${todayDay}`} title={`Next workshops start at ${nextSlot}`}>
-              Your fast overview for the workshop day. Save favorites, discover artists and move smoothly between venues.
+              Your smart companion for the workshop day. Save favorites, check live capacity, rate workshops, and move smoothly between venues.
             </Hero>
             <DaySwitch value={todayViewDay} onChange={setTodayViewDay} />
             <div className="mt-6"><SearchFilters query={query} setQuery={setQuery} category={category} setCategory={setCategory} categories={categories} /></div>
