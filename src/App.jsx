@@ -1970,7 +1970,13 @@ if (ratedWorkshops.includes(workshopId)) {
 
   console.log("RATING SUBMITTED:", workshopId, rating);
   console.log("RATING ERROR:", error);
+  if (!error) {
+  localStorage.setItem(
+    "ratedWorkshops",
+    JSON.stringify([...ratedWorkshops, workshopId])
+  );
 }
+  }
   function toggleReminder(id) {
     setReminders((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   }
