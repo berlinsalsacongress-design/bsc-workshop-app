@@ -702,6 +702,10 @@ const totalRatings =
   </span>
 </div>
 ) : null}
+            <p className="mt-3 text-[11px] uppercase tracking-[0.2em] text-zinc-500">
+  Rate this workshop
+</p>
+            
             <div className="mt-3 flex items-center gap-1">
   {[1, 2, 3, 4, 5].map((star) => (
     <button
