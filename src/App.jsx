@@ -690,7 +690,18 @@ const totalRatings =
             <button onClick={() => openDetails(workshop)} className="text-left"><h3 className="text-lg font-bold leading-tight text-white transition hover:text-pink-100 md:text-xl">{workshop.Workshop_Title}</h3></button>
             <p className="mt-2 text-sm text-zinc-300 md:text-base">{artists.join(" & ")}</p>
       {totalRatings > 0 ? (
-  
+  <div className="mt-2 flex items-center gap-2 text-sm text-yellow-300">
+  <span>⭐</span>
+
+  <span>
+    {averageRating.toFixed(1)} / 5
+  </span>
+
+  <span className="text-zinc-400">
+    ({totalRatings} ratings)
+  </span>
+</div>
+) : null}
           </div>
           <button onClick={() => toggleFavorite(workshop.Workshop_ID)} className={isFavorite ? "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#80045d] bg-[#80045d] text-xl text-white" : "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-xl text-zinc-300"}>
             {isFavorite ? "♥" : "♡"}
