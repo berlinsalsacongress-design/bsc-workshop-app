@@ -2013,6 +2013,7 @@ async function submitWorkshopRating(workshopId, rating) {
                         key={workshop.Workshop_ID}
                         workshop={workshop}
                         capacityData={capacityData}
+                        submitWorkshopRating={submitWorkshopRating}
                         ratingsData={ratingsData}
                         isFavorite={favorites.includes(workshop.Workshop_ID)}
                         toggleFavorite={toggleFavorite}
