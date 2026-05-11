@@ -1967,6 +1967,7 @@ const downloadStoryCard = async () => {
                         key={workshop.Workshop_ID}
                         workshop={workshop}
                         capacityData={capacityData}
+                        ratingsData={ratingsData}
                         isFavorite={favorites.includes(workshop.Workshop_ID)}
                         toggleFavorite={toggleFavorite}
                         artistsByName={artistsByName}
