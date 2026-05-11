@@ -717,12 +717,13 @@ const hasRatedWorkshop =
   disabled={hasRatedWorkshop}
   onClick={() => submitWorkshopRating(workshop.Workshop_ID, star)}
   className={`text-xl transition ${
-  hasRatedWorkshop
-    ? "text-yellow-300 cursor-default"
-    : "text-zinc-400 hover:scale-110 hover:text-yellow-300"
-}`}
-      ☆
-    </button>
+    hasRatedWorkshop
+      ? "text-yellow-300 cursor-default"
+      : "text-zinc-400 hover:scale-110 hover:text-yellow-300"
+  }`}
+>
+  ☆
+</button>
   ))}
 </div>
           </div>
