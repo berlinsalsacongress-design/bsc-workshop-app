@@ -1953,7 +1953,17 @@ const downloadStoryCard = async () => {
   console.log("CAPACITY UPDATE:", newCapacity);
   console.log("CAPACITY ERROR:", error);
 }
+async function submitWorkshopRating(workshopId, rating) {
+  const { error } = await supabase
+    .from("workshop_ratings")
+    .insert({
+      workshop_id: workshopId,
+      rating,
+    });
 
+  console.log("RATING SUBMITTED:", workshopId, rating);
+  console.log("RATING ERROR:", error);
+}
   function toggleReminder(id) {
     setReminders((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   }
