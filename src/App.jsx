@@ -1266,7 +1266,7 @@ function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavor
           {artistWorkshops.length ? (
             <div className="grid gap-3">
               {artistWorkshops.map((workshop) => (
-                <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={openWorkshopDetails} openLocation={openLocation} onShareWorkshop={onShareWorkshop} />
+                <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} submitWorkshopRating={submitWorkshopRating} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={openWorkshopDetails} openLocation={openLocation} onShareWorkshop={onShareWorkshop} />
               ))}
             </div>
           ) : (
