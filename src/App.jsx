@@ -9,7 +9,7 @@ const CSV_URLS = {
 const ADVANCED_LEVEL_ASSESSMENT_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSdVehpLy7zVnFIDcS6E1RdWjhQwpqA0tOui0-JXOlkkL-CRJA/viewform?usp=sharing&ouid=118189387469591371378";
 const DEMO_VIDEO_UPLOAD_URL =
-  "REPLACE_WITH_YOUR_DEMO_VIDEO_UPLOAD_LINK";
+  "https://forms.gle/qebPUS8sCajMcHFK6";
 
 const SUPABASE_URL = "https://nskzzqzioovzgamwyxyl.supabase.co";
 
