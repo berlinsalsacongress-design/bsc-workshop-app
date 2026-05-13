@@ -327,6 +327,36 @@ function getPopularityStatus(workshop, isFavorite) {
   return null;
 }
 
+function getLivePopularityStatus(workshop, capacityData = {}) {
+  const live = capacityData?.[workshop.Workshop_ID];
+  if (!live) return null;
+
+  const saved = Number(live.current_saved || 0);
+  const capacity = Number(live.room_capacity || getRoomCapacity(workshop) || 100);
+
+  if (!saved || !capacity) return null;
+
+  const ratio = saved / capacity;
+
+  if (ratio >= 1) {
+    return { label: "Likely to be crowded", shortLabel: "Likely crowded", saved, capacity, ratio, style: "border-red-400/30 bg-red-400/15 text-red-100", dot: "🔴" };
+  }
+
+  if (ratio >= 0.9) {
+    return { label: "Very popular", shortLabel: "Very popular", saved, capacity, ratio, style: "border-red-400/30 bg-red-400/15 text-red-100", dot: "🔴" };
+  }
+
+  if (ratio >= 0.75) {
+    return { label: "Getting crowded", shortLabel: "Crowded", saved, capacity, ratio, style: "border-orange-400/30 bg-orange-400/15 text-orange-100", dot: "🟠" };
+  }
+
+  if (ratio >= 0.5) {
+    return { label: "Getting popular", shortLabel: "Popular", saved, capacity, ratio, style: "border-yellow-300/30 bg-yellow-300/15 text-yellow-100", dot: "🟡" };
+  }
+
+  return { label: "Plenty of space", shortLabel: "Plenty of space", saved, capacity, ratio, style: "border-emerald-400/30 bg-emerald-400/15 text-emerald-100", dot: "🟢" };
+}
+
 function PopularityBadge({ popularity }) {
   if (!popularity) return null;
 
@@ -1138,13 +1168,13 @@ function QuickPlanIndicator({ favoritesCount, conflictsCount }) {
   );
 }
 
-function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGroup, isFavorite, toggleFavorite, favoriteWorkshops, openLocation, reminderSet, toggleReminder, onShareWorkshop }) {
+function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGroup, isFavorite, toggleFavorite, favoriteWorkshops, openLocation, reminderSet, toggleReminder, onShareWorkshop, capacityData = {} }) {
   if (!workshop) return null;
   const artists = namesForWorkshop(workshop);
   const location = locationsByGroup[workshop.Room_Group] || null;
   const previousFavorite = getPreviousFavoriteWorkshop(workshop, favoriteWorkshops || []);
   const previousWalkTime = previousFavorite ? getWalkingTime(previousFavorite.Room_Group, workshop.Room_Group) : null;
-  const popularity = getPopularityStatus(workshop, isFavorite);
+  const popularity = getLivePopularityStatus(workshop, capacityData);
   const fullyBooked = workshop.Signup_Required === "Yes" && workshop.Fully_Booked === "Yes";
 
   return (
@@ -2351,7 +2381,7 @@ if (ratedWorkshops.includes(workshopId)) {
         ) : null}
       </main>
 
-      <WorkshopDetailsModal workshop={selectedWorkshop} onClose={() => setSelectedWorkshop(null)} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} />
+      <WorkshopDetailsModal workshop={selectedWorkshop} onClose={() => setSelectedWorkshop(null)} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} capacityData={capacityData} />
 
       <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} />
 
