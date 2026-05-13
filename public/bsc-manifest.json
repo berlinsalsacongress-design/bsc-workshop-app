@@ -1,0 +1,25 @@
+{
+  "name": "Berlin Salsacongress Companion",
+  "short_name": "BSC Companion",
+  "description": "Berlin Salsacongress workshop companion app",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050005",
+  "theme_color": "#8b0056",
+  "icons": [
+    {
+      "src": "/bsc-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/bsc-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
