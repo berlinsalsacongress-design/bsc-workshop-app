@@ -2408,6 +2408,30 @@ if (ratedWorkshops.includes(workshopId)) {
               </div>
             </div>
 
+
+            <div className="mt-5 rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/25 via-black to-[#194d2d]/20 p-6">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Berlin Salsacongress 2027</p>
+              <h3 className="mt-2 text-2xl font-bold text-white">Secure Your Next One Family Weekend</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">
+                Already dreaming about the next edition? During the congress weekend, you will be able to secure your Berlin Salsacongress 2027 ticket directly here in the app.
+              </p>
+              <p className="mt-3 text-sm leading-6 text-zinc-400">
+                Be among the first to grab one of the limited early tickets and keep the magic going for another unforgettable weekend in Berlin.
+              </p>
+
+              <a
+                href="#"
+                onClick={(event) => event.preventDefault()}
+                aria-disabled="true"
+                className="mt-5 inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#80045d]/60 px-5 py-3 text-sm font-semibold text-white opacity-80"
+              >
+                Get Your BSC 2027 Ticket {icon("external")}
+              </a>
+              <p className="mt-3 text-xs leading-5 text-zinc-500">
+                This button is already prepared and will be activated during Berlin Salsacongress 2026.
+              </p>
+            </div>
+
             <div className="mt-5 rounded-[30px] border border-amber-300/20 bg-amber-300/10 p-6">
               <p className="text-[11px] uppercase tracking-[0.2em] text-amber-200">Workshop Etiquette</p>
               <h3 className="mt-2 text-2xl font-bold text-white">Respect the Learning Experience</h3>
