@@ -37,10 +37,10 @@ const fallbackArtists = [
 ];
 
 const fallbackLocations = [
-  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://maps.app.goo.gl/aeq6hKUrwpp5cFNJ8", Description: "Main venue with socials and workshops." },
-  { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/WwP5o1f6K7u8n9YQ8", Description: "Nearby workshop venue." },
-  { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/h5L4kM2P9sT7xYxB9", Description: "Additional nearby congress location." },
-  { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/r7Gx4NwY8mQ2eF7C7", Description: "Additional workshop area." },
+  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Tempodrom%20M%C3%B6ckernstra%C3%9Fe%2010%2010963%20Berlin", Description: "Main venue with socials and workshops." },
+  { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Aletto%20Hotel%20Potsdamer%20Platz%20Luckenwalder%20Str.%2012-14%2010963%20Berlin", Description: "Nearby workshop venue." },
+  { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Holiday%20Inn%20Express%20Berlin%20Stresemannstra%C3%9Fe%2049%2010963%20Berlin", Description: "Additional nearby congress location." },
+  { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Sporthalle%20Tempodrom%20Berlin%20M%C3%B6ckernstra%C3%9Fe%2010%2010963%20Berlin", Description: "Additional workshop area." },
 ];
 
 function parseCSV(text) {
@@ -138,6 +138,32 @@ function icon(name, filled = false) {
 
 function namesForWorkshop(workshop) {
   return [workshop.Artist_1, workshop.Artist_2].filter(Boolean);
+}
+
+function normalizeExternalUrl(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("@")) return `https://www.instagram.com/${raw.slice(1).replace(/^\/+|\/+$/g, "")}`;
+  if (/^https?:\/\//i.test(raw)) return raw;
+  if (/^www\./i.test(raw)) return `https://${raw}`;
+  if (/^instagram\.com\//i.test(raw)) return `https://www.${raw}`;
+  return `https://${raw}`;
+}
+
+function getInstagramUrl(artist) {
+  if (!artist) return "";
+  const directUrl = normalizeExternalUrl(artist.Instagram_URL);
+  if (directUrl) return directUrl;
+  const handle = String(artist.Instagram_Handle || "").trim().replace(/^@/, "");
+  return handle ? `https://www.instagram.com/${handle}` : "";
+}
+
+function openExternalUrl(event, url) {
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+  const safeUrl = normalizeExternalUrl(url);
+  if (!safeUrl) return;
+  window.open(safeUrl, "_blank", "noopener,noreferrer");
 }
 
 function slugify(value) {
@@ -811,8 +837,9 @@ const hasRatedWorkshop =
         <div className="mt-4 flex flex-wrap gap-2">
           {artists.map((name) => {
             const artist = artistsByName[name];
-            if (!artist || !artist.Instagram_URL) return null;
-            return <a key={name} href={artist.Instagram_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">{artist.Instagram_Handle || name} {icon("external")}</a>;
+            const instagramUrl = getInstagramUrl(artist);
+            if (!instagramUrl) return null;
+            return <a key={name} href={instagramUrl} onClick={(event) => openExternalUrl(event, instagramUrl)} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">{artist.Instagram_Handle || name} {icon("external")}</a>;
           })}
           {location && location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">Google Maps {icon("external")}</a> : null}
           <button onClick={() => openDetails(workshop)} className="rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-3 py-2 text-xs text-pink-100 hover:bg-[#80045d]/30">Details</button>
@@ -1267,8 +1294,9 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
           {location && location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">Open Google Maps {icon("external")}</a> : null}
           {artists.map((name) => {
             const artist = artistsByName[name];
-            if (!artist || !artist.Instagram_URL) return null;
-            return <a key={name} href={artist.Instagram_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">{artist.Instagram_Handle || name} {icon("external")}</a>;
+            const instagramUrl = getInstagramUrl(artist);
+            if (!instagramUrl) return null;
+            return <a key={name} href={instagramUrl} onClick={(event) => openExternalUrl(event, instagramUrl)} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">{artist.Instagram_Handle || name} {icon("external")}</a>;
           })}
         </div>
       </div>
@@ -1302,7 +1330,7 @@ function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavor
         <p className="mt-2 text-sm text-zinc-400">{artist.Country} · {artist.Style}</p>
 
         <div className="mt-5 flex flex-wrap gap-3">
-          {artist.Instagram_URL ? <a href={artist.Instagram_URL} target="_blank" rel="noreferrer" className="rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">{artist.Instagram_Handle || "Instagram"} {icon("external")}</a> : null}
+          {getInstagramUrl(artist) ? <a href={getInstagramUrl(artist)} onClick={(event) => openExternalUrl(event, getInstagramUrl(artist))} target="_blank" rel="noreferrer" className="rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">{artist.Instagram_Handle || "Instagram"} {icon("external")}</a> : null}
           <span className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-300">{artistWorkshops.length} workshops</span>
         </div>
 
@@ -2215,7 +2243,7 @@ if (ratedWorkshops.includes(workshopId)) {
                     <p className="mt-2 text-sm text-zinc-400">{artist.Style}</p>
                     <div className="mt-5 flex flex-wrap gap-2">
                       <button onClick={() => setSelectedArtist(artist)} className="rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-4 py-2 text-sm text-pink-100 hover:bg-[#80045d]/30">View workshops · {count}</button>
-                      {artist.Instagram_URL ? <a href={artist.Instagram_URL} target="_blank" rel="noreferrer" className="rounded-full bg-[#80045d] px-4 py-2 text-sm font-medium text-white">{artist.Instagram_Handle || "Instagram"} {icon("external")}</a> : null}
+                      {getInstagramUrl(artist) ? <a href={getInstagramUrl(artist)} onClick={(event) => openExternalUrl(event, getInstagramUrl(artist))} target="_blank" rel="noreferrer" className="rounded-full bg-[#80045d] px-4 py-2 text-sm font-medium text-white">{artist.Instagram_Handle || "Instagram"} {icon("external")}</a> : null}
                     </div>
                   </div>
                 );
