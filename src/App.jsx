@@ -37,11 +37,44 @@ const fallbackArtists = [
 ];
 
 const fallbackLocations = [
-  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://maps.app.goo.gl/aeq6hKUrwpp5cFNJ8", Description: "Main venue with socials and workshops." },
-  { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/WwP5o1f6K7u8n9YQ8", Description: "Nearby workshop venue." },
-  { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/h5L4kM2P9sT7xYxB9", Description: "Additional nearby congress location." },
-  { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/r7Gx4NwY8mQ2eF7C7", Description: "Additional workshop area." },
+  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Tempodrom%2C%20M%C3%B6ckernstra%C3%9Fe%2010%2C%2010963%20Berlin", Description: "Main venue with socials and workshops." },
+  { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=aletto%20Hotel%20Potsdamer%20Platz%2C%20Luckenwalder%20Str.%2012-14%2C%2010963%20Berlin", Description: "Nearby workshop venue." },
+  { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Holiday%20Inn%20Express%20Berlin%2C%20Stresemannstra%C3%9Fe%2049%2C%2010963%20Berlin", Description: "Additional nearby congress location." },
+  { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Sporthalle%20Tempodrom%20Berlin%20Salsacongress", Description: "Additional workshop area." },
 ];
+
+
+const GOOGLE_MAPS_OVERRIDES = {
+  "Tempodrom": "https://www.google.com/maps/search/?api=1&query=Tempodrom%2C%20M%C3%B6ckernstra%C3%9Fe%2010%2C%2010963%20Berlin",
+  "Sporthall": "https://www.google.com/maps/search/?api=1&query=Sporthalle%20Tempodrom%20Berlin%20Salsacongress",
+  "Aletto Hotel": "https://www.google.com/maps/search/?api=1&query=aletto%20Hotel%20Potsdamer%20Platz%2C%20Luckenwalder%20Str.%2012-14%2C%2010963%20Berlin",
+  "Holiday Inn Express": "https://www.google.com/maps/search/?api=1&query=Holiday%20Inn%20Express%20Berlin%2C%20Stresemannstra%C3%9Fe%2049%2C%2010963%20Berlin",
+};
+
+function getCanonicalLocationName(location) {
+  const value = String(location?.Location_Group || location?.Location_Name || "").trim();
+  const lower = value.toLowerCase();
+
+  if (lower.includes("tempodrom") || lower.includes("big arena") || lower.includes("small arena") || lower.includes("restaurant") || lower.includes("seminar")) return "Tempodrom";
+  if (lower.includes("sport")) return "Sporthall";
+  if (lower.includes("aletto")) return "Aletto Hotel";
+  if (lower.includes("holiday")) return "Holiday Inn Express";
+
+  return value;
+}
+
+function getGoogleMapsUrl(location) {
+  const canonicalName = getCanonicalLocationName(location);
+
+  if (GOOGLE_MAPS_OVERRIDES[canonicalName]) {
+    return GOOGLE_MAPS_OVERRIDES[canonicalName];
+  }
+
+  if (location?.Google_Maps_URL) return location.Google_Maps_URL;
+
+  const query = [location?.Location_Name, location?.Address].filter(Boolean).join(", ");
+  return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : "";
+}
 
 function parseCSV(text) {
   const rows = [];
@@ -784,7 +817,7 @@ const hasRatedWorkshop =
             if (!artist || !artist.Instagram_URL) return null;
             return <a key={name} href={artist.Instagram_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">{artist.Instagram_Handle || name} {icon("external")}</a>;
           })}
-          {location && location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">Google Maps {icon("external")}</a> : null}
+          {location && getGoogleMapsUrl(location) ? <a href={getGoogleMapsUrl(location)} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">Google Maps {icon("external")}</a> : null}
           <button onClick={() => openDetails(workshop)} className="rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-3 py-2 text-xs text-pink-100 hover:bg-[#80045d]/30">Details</button>
           <button onClick={() => onShareWorkshop?.(workshop)} className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-white/10">Share Workshop ↗</button>
         </div>
@@ -1234,7 +1267,7 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
           <button onClick={() => toggleFavorite(workshop.Workshop_ID)} className="rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">{isFavorite ? "Remove Favorite" : "Save Favorite"}</button>
           <button onClick={() => toggleReminder(workshop.Workshop_ID)} className={reminderSet ? "rounded-full border border-sky-300/30 bg-sky-300/15 px-5 py-3 text-sm font-semibold text-sky-100" : "rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/10"}>{reminderSet ? "Reminder set" : "Remind me 10 min before"}</button>
           <button onClick={() => onShareWorkshop?.(workshop)} className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/10">Share Workshop ↗</button>
-          {location && location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">Open Google Maps {icon("external")}</a> : null}
+          {location && getGoogleMapsUrl(location) ? <a href={getGoogleMapsUrl(location)} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">Open Google Maps {icon("external")}</a> : null}
           {artists.map((name) => {
             const artist = artistsByName[name];
             if (!artist || !artist.Instagram_URL) return null;
@@ -1869,22 +1902,10 @@ const downloadStoryCard = async () => {
   const displayLocations = useMemo(() => {
     const preferredVenueNames = ["Tempodrom", "Sporthall", "Aletto Hotel", "Holiday Inn Express"];
 
-    function canonicalVenueName(location) {
-      const value = String(location.Location_Group || location.Location_Name || "").trim();
-      const lower = value.toLowerCase();
-
-      if (lower.includes("tempodrom") || lower.includes("big arena") || lower.includes("small arena") || lower.includes("restaurant") || lower.includes("seminar")) return "Tempodrom";
-      if (lower.includes("sport")) return "Sporthall";
-      if (lower.includes("aletto")) return "Aletto Hotel";
-      if (lower.includes("holiday")) return "Holiday Inn Express";
-
-      return value;
-    }
-
     const byVenue = new Map();
 
     locations.forEach((location) => {
-      const canonicalName = canonicalVenueName(location);
+      const canonicalName = getCanonicalLocationName(location);
       if (!preferredVenueNames.includes(canonicalName)) return;
 
       if (!byVenue.has(canonicalName)) {
@@ -1895,7 +1916,7 @@ const downloadStoryCard = async () => {
           Location_Name: canonicalName,
           Location_Group: canonicalName,
           Address: location.Address || fallback.Address || "Berlin",
-          Google_Maps_URL: fallback.Google_Maps_URL || location.Google_Maps_URL || "",
+          Google_Maps_URL: getGoogleMapsUrl({ ...fallback, ...location, Location_Name: canonicalName, Location_Group: canonicalName }),
           Description: fallback.Description || location.Description || "Congress venue.",
         });
       }
@@ -2226,9 +2247,9 @@ if (ratedWorkshops.includes(workshopId)) {
 
             <WalkingTimeChips locationName={location.Location_Name} allLocations={displayLocations} />
 
-            {location.Google_Maps_URL ? (
+            {getGoogleMapsUrl(location) ? (
               <a
-                href={location.Google_Maps_URL}
+                href={getGoogleMapsUrl(location)}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-5 inline-flex rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white"
