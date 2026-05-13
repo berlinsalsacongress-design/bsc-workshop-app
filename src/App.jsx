@@ -612,34 +612,52 @@ async function copyTextFallback(text) {
   }
 }
 
+function getWorkshopShareUrl(workshop) {
+  if (typeof window === "undefined") return "";
+
+  const baseUrl = `${window.location.origin}${window.location.pathname}`;
+  const id = workshop?.Workshop_ID ? `#workshop-${encodeURIComponent(workshop.Workshop_ID)}` : "";
+  return `${baseUrl}${id}`;
+}
+
 async function shareWorkshop(workshop) {
-  const text = formatWorkshopShareText(workshop);
   const title = `${workshop.Workshop_Title} · Berlin Salsacongress`;
+  const url = getWorkshopShareUrl(workshop);
+  const text = `${formatWorkshopShareText(workshop)}${url ? `\n\n${url}` : ""}`;
+  const shareData = url ? { title, text, url } : { title, text };
 
-  try {
-    const shareData = { title, text };
+  const isLikelyMobile =
+    typeof navigator !== "undefined" &&
+    (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1);
 
-    if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+  if (isLikelyMobile && navigator.share) {
+    try {
       await navigator.share(shareData);
       return "shared";
+    } catch (error) {
+      if (error?.name === "AbortError") return "cancelled";
+      console.warn("Native workshop sharing failed, trying clipboard fallback", error);
     }
+  }
 
+  try {
     if (navigator.clipboard?.writeText && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
       return "copied";
     }
 
-    return await copyTextFallback(text);
+    const fallbackResult = await copyTextFallback(text);
+    if (fallbackResult === "copied") return "copied";
   } catch (error) {
-    if (error?.name === "AbortError") return "cancelled";
-
-    try {
-      return await copyTextFallback(text);
-    } catch (fallbackError) {
-      console.warn("Could not share workshop", error, fallbackError);
-      return "failed";
-    }
+    console.warn("Clipboard workshop sharing failed", error);
   }
+
+  if (typeof window !== "undefined" && window.prompt) {
+    window.prompt("Copy these workshop details:", text);
+    return "manual";
+  }
+
+  return "failed";
 }
 
 function WorkshopCard({ workshop, isFavorite, toggleFavorite, submitWorkshopRating, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, capacityData, ratingsData, reminderSet = false, showReminder = false }) {
@@ -2066,6 +2084,7 @@ if (ratedWorkshops.includes(workshopId)) {
   async function handleShareWorkshop(workshop) {
     const result = await shareWorkshop(workshop);
     if (result === "copied") setShareNotice("Workshop details copied to clipboard.");
+    if (result === "manual") setShareNotice("Copy window opened.");
     if (result === "failed") setShareNotice("Sharing did not work. Please try again.");
     if (result === "shared") setShareNotice("Workshop shared.");
     if (result === "cancelled") return;
