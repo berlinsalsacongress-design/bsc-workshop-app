@@ -8,6 +8,9 @@ const CSV_URLS = {
 };
 const ADVANCED_LEVEL_ASSESSMENT_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSdVehpLy7zVnFIDcS6E1RdWjhQwpqA0tOui0-JXOlkkL-CRJA/viewform?usp=sharing&ouid=118189387469591371378";
+const DEMO_VIDEO_UPLOAD_URL =
+  "REPLACE_WITH_YOUR_DEMO_VIDEO_UPLOAD_LINK";
+
 const SUPABASE_URL = "https://nskzzqzioovzgamwyxyl.supabase.co";
 
 const SUPABASE_ANON_KEY =
@@ -156,6 +159,57 @@ function getInstagramUrl(artist) {
   if (directUrl) return directUrl;
   const handle = String(artist.Instagram_Handle || "").trim().replace(/^@/, "");
   return handle ? `https://www.instagram.com/${handle}` : "";
+}
+
+function isDemoUploadReady() {
+  return Boolean(DEMO_VIDEO_UPLOAD_URL && !DEMO_VIDEO_UPLOAD_URL.includes("REPLACE_WITH"));
+}
+
+function getDemoVideoUploadUrl(workshop) {
+  if (!isDemoUploadReady()) return "#";
+  try {
+    const url = new URL(DEMO_VIDEO_UPLOAD_URL);
+    if (workshop) {
+      url.searchParams.set("workshop", workshop.Workshop_ID || workshop.Workshop_Title || "");
+      url.searchParams.set("title", workshop.Workshop_Title || "");
+      url.searchParams.set("artists", namesForWorkshop(workshop).join(" & "));
+      url.searchParams.set("day", workshop.Day || "");
+      url.searchParams.set("time", `${workshop.Start_Time || ""}-${workshop.End_Time || ""}`);
+      url.searchParams.set("room", workshop.Room || "");
+    }
+    return url.toString();
+  } catch (error) {
+    return DEMO_VIDEO_UPLOAD_URL;
+  }
+}
+
+function DemoVideoUploadButton({ workshop = null, compact = false }) {
+  const ready = isDemoUploadReady();
+  const uploadUrl = getDemoVideoUploadUrl(workshop);
+
+  if (!ready) {
+    return (
+      <button
+        type="button"
+        disabled
+        title="Upload link will be activated during the event"
+        className={compact ? "rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-500" : "inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#80045d]/50 px-5 py-3 text-sm font-semibold text-white opacity-70"}
+      >
+        Upload Demo Video
+      </button>
+    );
+  }
+
+  return (
+    <a
+      href={uploadUrl}
+      target="_blank"
+      rel="noreferrer"
+      className={compact ? "rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-3 py-2 text-xs text-pink-100 hover:bg-[#80045d]/30" : "inline-flex items-center justify-center rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#96076d]"}
+    >
+      Upload Demo Video {icon("external")}
+    </a>
+  );
 }
 
 function openExternalUrl(event, url) {
@@ -834,6 +888,11 @@ const hasRatedWorkshop =
 
         <PopularityPanel popularity={popularity} />
 
+        <div className="mt-4 rounded-2xl border border-[#80045d]/20 bg-[#80045d]/10 p-3 text-sm text-pink-50">
+          <p className="mb-3 text-xs leading-5 text-pink-100/90">Recorded the final workshop demo? Share it with us for possible Instagram features.</p>
+          <DemoVideoUploadButton workshop={workshop} compact />
+        </div>
+
         <div className="mt-4 flex flex-wrap gap-2">
           {artists.map((name) => {
             const artist = artistsByName[name];
@@ -1274,6 +1333,18 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
           <p className="mt-2 leading-6">
             Please do not record during the workshop itself. Teachers will invite participants to film the final workshop demo at the end of the class.
           </p>
+          <div className="mt-4 rounded-2xl border border-[#80045d]/25 bg-[#80045d]/15 p-4">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Share Your Demo Video</p>
+            <p className="mt-2 leading-6 text-pink-50/90">
+              Recorded the final demo? Send it to us and help us capture the magic of this workshop.
+            </p>
+            <div className="mt-4">
+              <DemoVideoUploadButton workshop={workshop} />
+            </div>
+            <p className="mt-3 text-xs leading-5 text-zinc-400">
+              Your video may be used for Berlin Salsacongress social media content.
+            </p>
+          </div>
         </div>
 
         <PopularityPanel popularity={popularity} />
@@ -2408,6 +2479,23 @@ if (ratedWorkshops.includes(workshopId)) {
               </div>
             </div>
 
+
+            <div className="mt-5 rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/20 via-black to-amber-300/10 p-6">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Share Your Workshop Demo Videos</p>
+              <h3 className="mt-2 text-2xl font-bold text-white">Help Us Capture the Magic</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">
+                Did you record the final demo at the end of a workshop? We would love to receive your videos and use some of them for Berlin Salsacongress Instagram Reels, Stories and future event memories.
+              </p>
+              <p className="mt-3 text-sm leading-6 text-zinc-400">
+                Please only upload videos of final workshop demos, not recordings from the teaching part of the class. By sending us your video, you allow Berlin Salsacongress to use it for social media and promotional content.
+              </p>
+              <div className="mt-5">
+                <DemoVideoUploadButton />
+              </div>
+              <p className="mt-3 text-xs leading-5 text-zinc-500">
+                The upload link is prepared here and can be connected to your Google Drive, Dropbox, Uploadcare or another upload form before the event.
+              </p>
+            </div>
 
             <div className="mt-5 rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/25 via-black to-[#194d2d]/20 p-6">
               <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Berlin Salsacongress 2027</p>
