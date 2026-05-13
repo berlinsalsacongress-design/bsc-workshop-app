@@ -37,44 +37,11 @@ const fallbackArtists = [
 ];
 
 const fallbackLocations = [
-  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Tempodrom%2C%20M%C3%B6ckernstra%C3%9Fe%2010%2C%2010963%20Berlin", Description: "Main venue with socials and workshops." },
-  { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=aletto%20Hotel%20Potsdamer%20Platz%2C%20Luckenwalder%20Str.%2012-14%2C%2010963%20Berlin", Description: "Nearby workshop venue." },
-  { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Holiday%20Inn%20Express%20Berlin%2C%20Stresemannstra%C3%9Fe%2049%2C%2010963%20Berlin", Description: "Additional nearby congress location." },
-  { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://www.google.com/maps/search/?api=1&query=Sporthalle%20Tempodrom%20Berlin%20Salsacongress", Description: "Additional workshop area." },
+  { Location_Name: "Tempodrom", Location_Group: "Tempodrom", Map_Image: "/Tempodrom Map 2026.png", Address: "Möckernstraße 10, 10963 Berlin", Google_Maps_URL: "https://maps.app.goo.gl/aeq6hKUrwpp5cFNJ8", Description: "Main venue with socials and workshops." },
+  { Location_Name: "Aletto Hotel", Location_Group: "Aletto Hotel", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/WwP5o1f6K7u8n9YQ8", Description: "Nearby workshop venue." },
+  { Location_Name: "Holiday Inn Express", Location_Group: "Holiday Inn Express", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/h5L4kM2P9sT7xYxB9", Description: "Additional nearby congress location." },
+  { Location_Name: "Sporthall", Location_Group: "Sporthall", Address: "Berlin", Google_Maps_URL: "https://maps.app.goo.gl/r7Gx4NwY8mQ2eF7C7", Description: "Additional workshop area." },
 ];
-
-
-const GOOGLE_MAPS_OVERRIDES = {
-  "Tempodrom": "https://www.google.com/maps/search/?api=1&query=Tempodrom%2C%20M%C3%B6ckernstra%C3%9Fe%2010%2C%2010963%20Berlin",
-  "Sporthall": "https://www.google.com/maps/search/?api=1&query=Sporthalle%20Tempodrom%20Berlin%20Salsacongress",
-  "Aletto Hotel": "https://www.google.com/maps/search/?api=1&query=aletto%20Hotel%20Potsdamer%20Platz%2C%20Luckenwalder%20Str.%2012-14%2C%2010963%20Berlin",
-  "Holiday Inn Express": "https://www.google.com/maps/search/?api=1&query=Holiday%20Inn%20Express%20Berlin%2C%20Stresemannstra%C3%9Fe%2049%2C%2010963%20Berlin",
-};
-
-function getCanonicalLocationName(location) {
-  const value = String(location?.Location_Group || location?.Location_Name || "").trim();
-  const lower = value.toLowerCase();
-
-  if (lower.includes("tempodrom") || lower.includes("big arena") || lower.includes("small arena") || lower.includes("restaurant") || lower.includes("seminar")) return "Tempodrom";
-  if (lower.includes("sport")) return "Sporthall";
-  if (lower.includes("aletto")) return "Aletto Hotel";
-  if (lower.includes("holiday")) return "Holiday Inn Express";
-
-  return value;
-}
-
-function getGoogleMapsUrl(location) {
-  const canonicalName = getCanonicalLocationName(location);
-
-  if (GOOGLE_MAPS_OVERRIDES[canonicalName]) {
-    return GOOGLE_MAPS_OVERRIDES[canonicalName];
-  }
-
-  if (location?.Google_Maps_URL) return location.Google_Maps_URL;
-
-  const query = [location?.Location_Name, location?.Address].filter(Boolean).join(", ");
-  return query ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}` : "";
-}
 
 function parseCSV(text) {
   const rows = [];
@@ -612,52 +579,34 @@ async function copyTextFallback(text) {
   }
 }
 
-function getWorkshopShareUrl(workshop) {
-  if (typeof window === "undefined") return "";
-
-  const baseUrl = `${window.location.origin}${window.location.pathname}`;
-  const id = workshop?.Workshop_ID ? `#workshop-${encodeURIComponent(workshop.Workshop_ID)}` : "";
-  return `${baseUrl}${id}`;
-}
-
 async function shareWorkshop(workshop) {
+  const text = formatWorkshopShareText(workshop);
   const title = `${workshop.Workshop_Title} · Berlin Salsacongress`;
-  const url = getWorkshopShareUrl(workshop);
-  const text = `${formatWorkshopShareText(workshop)}${url ? `\n\n${url}` : ""}`;
-  const shareData = url ? { title, text, url } : { title, text };
-
-  const isLikelyMobile =
-    typeof navigator !== "undefined" &&
-    (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || navigator.maxTouchPoints > 1);
-
-  if (isLikelyMobile && navigator.share) {
-    try {
-      await navigator.share(shareData);
-      return "shared";
-    } catch (error) {
-      if (error?.name === "AbortError") return "cancelled";
-      console.warn("Native workshop sharing failed, trying clipboard fallback", error);
-    }
-  }
 
   try {
+    const shareData = { title, text };
+
+    if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+      await navigator.share(shareData);
+      return "shared";
+    }
+
     if (navigator.clipboard?.writeText && window.isSecureContext) {
       await navigator.clipboard.writeText(text);
       return "copied";
     }
 
-    const fallbackResult = await copyTextFallback(text);
-    if (fallbackResult === "copied") return "copied";
+    return await copyTextFallback(text);
   } catch (error) {
-    console.warn("Clipboard workshop sharing failed", error);
-  }
+    if (error?.name === "AbortError") return "cancelled";
 
-  if (typeof window !== "undefined" && window.prompt) {
-    window.prompt("Copy these workshop details:", text);
-    return "manual";
+    try {
+      return await copyTextFallback(text);
+    } catch (fallbackError) {
+      console.warn("Could not share workshop", error, fallbackError);
+      return "failed";
+    }
   }
-
-  return "failed";
 }
 
 function WorkshopCard({ workshop, isFavorite, toggleFavorite, submitWorkshopRating, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, capacityData, ratingsData, reminderSet = false, showReminder = false }) {
@@ -835,7 +784,7 @@ const hasRatedWorkshop =
             if (!artist || !artist.Instagram_URL) return null;
             return <a key={name} href={artist.Instagram_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">{artist.Instagram_Handle || name} {icon("external")}</a>;
           })}
-          {location && getGoogleMapsUrl(location) ? <a href={getGoogleMapsUrl(location)} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">Google Maps {icon("external")}</a> : null}
+          {location && location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-[#80045d]/10">Google Maps {icon("external")}</a> : null}
           <button onClick={() => openDetails(workshop)} className="rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-3 py-2 text-xs text-pink-100 hover:bg-[#80045d]/30">Details</button>
           <button onClick={() => onShareWorkshop?.(workshop)} className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs text-zinc-200 hover:bg-white/10">Share Workshop ↗</button>
         </div>
@@ -1285,7 +1234,7 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
           <button onClick={() => toggleFavorite(workshop.Workshop_ID)} className="rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white">{isFavorite ? "Remove Favorite" : "Save Favorite"}</button>
           <button onClick={() => toggleReminder(workshop.Workshop_ID)} className={reminderSet ? "rounded-full border border-sky-300/30 bg-sky-300/15 px-5 py-3 text-sm font-semibold text-sky-100" : "rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/10"}>{reminderSet ? "Reminder set" : "Remind me 10 min before"}</button>
           <button onClick={() => onShareWorkshop?.(workshop)} className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-200 hover:bg-white/10">Share Workshop ↗</button>
-          {location && getGoogleMapsUrl(location) ? <a href={getGoogleMapsUrl(location)} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">Open Google Maps {icon("external")}</a> : null}
+          {location && location.Google_Maps_URL ? <a href={location.Google_Maps_URL} target="_blank" rel="noreferrer" className="rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-zinc-200">Open Google Maps {icon("external")}</a> : null}
           {artists.map((name) => {
             const artist = artistsByName[name];
             if (!artist || !artist.Instagram_URL) return null;
@@ -1606,6 +1555,15 @@ function WeatherCard({ weather, loading, error }) {
 }
 
 export default function App() {
+
+  useEffect(() => {
+    const favicon = document.querySelector("link[rel='icon']") || document.createElement("link");
+    favicon.rel = "icon";
+    favicon.type = "image/png";
+    favicon.href = "data:image/png;base64,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";
+    document.head.appendChild(favicon);
+  }, []);
+
   useEffect(() => {
   async function loadCapacityData() {
     const { data, error } = await supabase
@@ -1920,10 +1878,22 @@ const downloadStoryCard = async () => {
   const displayLocations = useMemo(() => {
     const preferredVenueNames = ["Tempodrom", "Sporthall", "Aletto Hotel", "Holiday Inn Express"];
 
+    function canonicalVenueName(location) {
+      const value = String(location.Location_Group || location.Location_Name || "").trim();
+      const lower = value.toLowerCase();
+
+      if (lower.includes("tempodrom") || lower.includes("big arena") || lower.includes("small arena") || lower.includes("restaurant") || lower.includes("seminar")) return "Tempodrom";
+      if (lower.includes("sport")) return "Sporthall";
+      if (lower.includes("aletto")) return "Aletto Hotel";
+      if (lower.includes("holiday")) return "Holiday Inn Express";
+
+      return value;
+    }
+
     const byVenue = new Map();
 
     locations.forEach((location) => {
-      const canonicalName = getCanonicalLocationName(location);
+      const canonicalName = canonicalVenueName(location);
       if (!preferredVenueNames.includes(canonicalName)) return;
 
       if (!byVenue.has(canonicalName)) {
@@ -1934,7 +1904,7 @@ const downloadStoryCard = async () => {
           Location_Name: canonicalName,
           Location_Group: canonicalName,
           Address: location.Address || fallback.Address || "Berlin",
-          Google_Maps_URL: getGoogleMapsUrl({ ...fallback, ...location, Location_Name: canonicalName, Location_Group: canonicalName }),
+          Google_Maps_URL: fallback.Google_Maps_URL || location.Google_Maps_URL || "",
           Description: fallback.Description || location.Description || "Congress venue.",
         });
       }
@@ -2084,7 +2054,6 @@ if (ratedWorkshops.includes(workshopId)) {
   async function handleShareWorkshop(workshop) {
     const result = await shareWorkshop(workshop);
     if (result === "copied") setShareNotice("Workshop details copied to clipboard.");
-    if (result === "manual") setShareNotice("Copy window opened.");
     if (result === "failed") setShareNotice("Sharing did not work. Please try again.");
     if (result === "shared") setShareNotice("Workshop shared.");
     if (result === "cancelled") return;
@@ -2120,7 +2089,6 @@ if (ratedWorkshops.includes(workshopId)) {
                         locationsByGroup={locationsByGroup}
                         openDetails={setSelectedWorkshop}
                         openLocation={openLocationFromWorkshop}
-                        onShareWorkshop={handleShareWorkshop}
                       />
                     ))}
                   </div>
@@ -2267,9 +2235,9 @@ if (ratedWorkshops.includes(workshopId)) {
 
             <WalkingTimeChips locationName={location.Location_Name} allLocations={displayLocations} />
 
-            {getGoogleMapsUrl(location) ? (
+            {location.Google_Maps_URL ? (
               <a
-                href={getGoogleMapsUrl(location)}
+                href={location.Google_Maps_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="mt-5 inline-flex rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white"
