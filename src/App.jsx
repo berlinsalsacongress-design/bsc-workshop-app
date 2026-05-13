@@ -2267,6 +2267,17 @@ if (ratedWorkshops.includes(workshopId)) {
             <Hero eyebrow={`Today · ${todayDay}`} title={`Next workshops start at ${nextSlot}`}>
               Your smart companion for the workshop day. Save favorites, check live capacity, rate workshops, and move smoothly between venues.
             </Hero>
+            <div className="mt-5 rounded-[28px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/20 via-black to-[#194d2d]/20 p-5">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Install the App</p>
+              <h3 className="mt-2 text-xl font-bold text-white">Add BSC Companion to your Home Screen</h3>
+              <p className="mt-2 text-sm leading-6 text-zinc-300">
+                For quick access during the congress weekend, install this app on your phone — no need to remember the URL.
+              </p>
+              <div className="mt-4 grid gap-3 text-sm text-zinc-300 md:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">🍎 <span className="font-semibold text-white">iPhone:</span> Safari → Share → Add to Home Screen</div>
+                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">🤖 <span className="font-semibold text-white">Android:</span> Chrome → ⋮ → Add to Home Screen</div>
+              </div>
+            </div>
             <DaySwitch value={todayViewDay} onChange={setTodayViewDay} />
             <div className="mt-6"><SearchFilters query={query} setQuery={setQuery} category={category} setCategory={setCategory} categories={categories} /></div>
             <AdvancedFilters level={levelFilter} setLevel={setLevelFilter} location={locationFilter} setLocation={setLocationFilter} partnerwork={partnerworkFilter} setPartnerwork={setPartnerworkFilter} signup={signupFilter} setSignup={setSignupFilter} styleFilter={styleFilter} setStyleFilter={setStyleFilter} levels={levels} locations={locationOptions} styles={styles} />
@@ -2403,6 +2414,25 @@ if (ratedWorkshops.includes(workshopId)) {
             <Hero eyebrow="One Family" title="Berlin Salsacongress 2026">Your smart congress companion for the weekend. Build your personal schedule, check live workshop capacity, rate workshops, explore artists and enjoy the magic of social dancing together.</Hero>
 
             <WeatherCard weather={weather} loading={weatherLoading} error={weatherError} />
+            <div className="mt-5 rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/20 via-black to-[#194d2d]/20 p-6">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Install the App</p>
+              <h3 className="mt-2 text-2xl font-bold text-white">Add BSC Companion to Your Home Screen</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">
+                For the best experience during Berlin Salsacongress, add the app to your phone’s Home Screen. This gives you fast access to your schedule, favorites, maps, capacity hints and event updates without searching for the link again.
+              </p>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                <div className="rounded-3xl border border-white/10 bg-black/30 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">iPhone</p>
+                  <h4 className="mt-2 text-lg font-bold text-white">Use Safari</h4>
+                  <p className="mt-3 text-sm leading-6 text-zinc-300">Open the app in Safari, tap the Share icon and choose “Add to Home Screen”.</p>
+                </div>
+                <div className="rounded-3xl border border-white/10 bg-black/30 p-5">
+                  <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">Android</p>
+                  <h4 className="mt-2 text-lg font-bold text-white">Use Chrome</h4>
+                  <p className="mt-3 text-sm leading-6 text-zinc-300">Open the app in Chrome, tap the three-dot menu and choose “Add to Home Screen” or “Install App”.</p>
+                </div>
+              </div>
+            </div>
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               <div className="rounded-[30px] border border-white/10 bg-white/[0.03] p-6">
