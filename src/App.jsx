@@ -1440,6 +1440,24 @@ function TempodromMiniMap() {
           />
         </div>
 
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a
+            href="/Tempodrom Map 2026.png"
+            download="Berlin-Salsacongress-Tempodrom-Map-2026.png"
+            className="inline-flex items-center justify-center rounded-full bg-[#a00073] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#c0008a]"
+          >
+            Download Tempodrom Map ↧
+          </a>
+          <a
+            href="/Tempodrom Map 2026.png"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/10"
+          >
+            Open Map in New Tab ↗
+          </a>
+        </div>
+
         <div className="mt-5 grid gap-3 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
             <p className="text-sm font-semibold text-white">Big Arena</p>
