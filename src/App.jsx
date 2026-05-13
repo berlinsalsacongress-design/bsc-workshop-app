@@ -2120,6 +2120,7 @@ if (ratedWorkshops.includes(workshopId)) {
                         locationsByGroup={locationsByGroup}
                         openDetails={setSelectedWorkshop}
                         openLocation={openLocationFromWorkshop}
+                        onShareWorkshop={handleShareWorkshop}
                       />
                     ))}
                   </div>
