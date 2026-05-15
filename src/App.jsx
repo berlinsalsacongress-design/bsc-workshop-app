@@ -2626,6 +2626,25 @@ if (ratedWorkshops.includes(workshopId)) {
               </p>
             </div>
 
+
+
+            <div className="mt-5 rounded-[30px] border border-red-400/25 bg-gradient-to-br from-red-500/15 via-black to-[#80045d]/15 p-6">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-red-200">Workshop Sign-Up</p>
+              <h3 className="mt-2 text-2xl font-bold text-white">Prior Sign-Up Required?</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">
+                Some workshops take place in smaller rooms and require prior sign-up. This helps us manage capacity, keep a better leader/follower balance and create smoother, high-quality workshops for everyone.
+              </p>
+              <p className="mt-3 text-sm leading-6 text-zinc-400">
+                If your pass includes workshops, you will receive your personal sign-up link via Eventbrite 4 days before the event. Please check your inbox and spam folder carefully.
+              </p>
+              <div className="mt-5 rounded-2xl border border-red-400/20 bg-black/30 p-4 text-sm leading-6 text-zinc-300">
+                <span className="font-semibold text-white">⏰ Sign-up email:</span> Monday, August 24 at 10:00 AM (CEST)
+              </div>
+              <div className="mt-5">
+                <SignupInfoTrigger />
+              </div>
+            </div>
+
             <div className="mt-5 rounded-[30px] border border-amber-300/20 bg-amber-300/10 p-6">
               <p className="text-[11px] uppercase tracking-[0.2em] text-amber-200">Workshop Etiquette</p>
               <h3 className="mt-2 text-2xl font-bold text-white">Respect the Learning Experience</h3>
