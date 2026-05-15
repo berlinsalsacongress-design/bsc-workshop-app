@@ -2607,6 +2607,31 @@ if (ratedWorkshops.includes(workshopId)) {
             </div>
 
 
+            <div className="mt-5 rounded-[30px] border border-[#25D366]/25 bg-gradient-to-br from-[#25D366]/15 via-black to-[#80045d]/15 p-6">
+              <p className="text-[11px] uppercase tracking-[0.2em] text-[#9cf0bf]">Need Help?</p>
+              <h3 className="mt-2 text-2xl font-bold text-white">We Are Here for You</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-300">
+                Berlin Salsacongress is committed to creating a respectful, welcoming and safer space for everybody. If you experience harassment, inappropriate behavior, discrimination, consent violations or if you feel unsafe in any situation, please contact us immediately.
+              </p>
+              <p className="mt-3 text-sm leading-6 text-zinc-400">
+                You can reach our team directly via WhatsApp. During the event, the registration desk is also staffed almost continuously. You can also approach our team leads Sarah or Emma there at any time.
+              </p>
+              <div className="mt-5 flex flex-wrap gap-3">
+                <a
+                  href="https://wa.me/4915223878424"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90"
+                >
+                  Contact Us on WhatsApp {icon("external")}
+                </a>
+              </div>
+              <p className="mt-3 text-xs leading-5 text-zinc-500">
+                In urgent situations, please also approach any Berlin Salsacongress staff member directly.
+              </p>
+            </div>
+
+
             <div className="mt-5 rounded-[30px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/20 via-black to-amber-300/10 p-6">
               <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">Share Your Workshop Demo Videos</p>
               <h3 className="mt-2 text-2xl font-bold text-white">Help Us Capture the Magic</h3>
