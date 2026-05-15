@@ -267,17 +267,38 @@ function getCategoryStyle(category) {
 
 function getStyleBadgeStyle(style) {
   const value = (style || "").toLowerCase();
-  if (value === "on1") return "bg-pink-400/15 text-pink-100 ring-1 ring-pink-300/30";
-  if (value === "on2") return "bg-sky-400/15 text-sky-100 ring-1 ring-sky-300/30";
-  return "bg-white/5 text-zinc-300 ring-1 ring-white/10";
+
+  // Style badges are intentionally softer than level badges.
+  // They should help dancers identify On1 / On2 quickly without competing with the level information.
+  if (value === "on1") return "border border-cyan-300/35 bg-cyan-300/10 text-cyan-100";
+  if (value === "on2") return "border border-violet-300/35 bg-violet-300/10 text-violet-100";
+  return "border border-white/10 bg-white/5 text-zinc-300";
 }
 
-function Badge({ children, soft = false, category = false, style = false }) {
-  const badgeStyle = style ? getStyleBadgeStyle(children) : category ? getCategoryStyle(children) : "bg-[#80045d]/30 text-pink-100 ring-1 ring-[#80045d]/40";
+function getLevelBadgeStyle(level) {
+  const value = (level || "").toLowerCase();
+
+  // Level badges stay visually stronger because level is usually the most important decision point.
+  if (value.includes("beginner")) return "border border-emerald-300/40 bg-emerald-400/18 text-emerald-100";
+  if (value.includes("intermediate") && value.includes("advanced")) return "border border-amber-300/45 bg-amber-400/18 text-amber-100";
+  if (value.includes("intermediate")) return "border border-lime-300/40 bg-lime-400/18 text-lime-100";
+  if (value.includes("advanced+")) return "border border-fuchsia-300/45 bg-fuchsia-500/20 text-fuchsia-100";
+  if (value.includes("advanced")) return "border border-orange-300/45 bg-orange-400/20 text-orange-100";
+  return "border border-white/10 bg-white/5 text-zinc-300";
+}
+
+function Badge({ children, soft = false, category = false, style = false, level = false }) {
+  const badgeStyle = level
+    ? getLevelBadgeStyle(children)
+    : style
+      ? getStyleBadgeStyle(children)
+      : category
+        ? getCategoryStyle(children)
+        : "bg-[#80045d]/30 text-pink-100 ring-1 ring-[#80045d]/40";
 
   return (
     <span
-      className={soft ? "rounded-full bg-white/5 px-2.5 py-1 text-xs text-zinc-300" : `rounded-full px-2.5 py-1 text-xs ${badgeStyle}`}
+      className={soft ? "rounded-full bg-white/5 px-2.5 py-1 text-xs text-zinc-300" : `rounded-full px-2.5 py-1 text-xs font-medium ${badgeStyle}`}
     >
       {children}
     </span>
@@ -854,7 +875,7 @@ const hasRatedWorkshop =
               {showReminder ? <ReminderBadge enabled={reminderSet} /> : null}
               <Badge category>{workshop.Category || "Workshop"}</Badge>
               {workshop.Style ? <Badge style>{workshop.Style}</Badge> : null}
-              <Badge soft>{workshop.Level || "All levels"}</Badge>
+              <Badge level>{workshop.Level || "All levels"}</Badge>
               {workshop.Signup_Required === "Yes" ? <SignupInfoTrigger /> : null}
               <div className="mt-3 w-full">
   <div className="mb-1 flex items-center justify-between text-[11px] text-zinc-300">
@@ -1356,7 +1377,7 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
         <div className="mt-5 flex flex-wrap gap-2">
           <Badge category>{workshop.Category || "Workshop"}</Badge>
           {workshop.Style ? <Badge style>{workshop.Style}</Badge> : null}
-          <Badge soft>{workshop.Level || "All levels"}</Badge>
+          <Badge level>{workshop.Level || "All levels"}</Badge>
           <PopularityBadge popularity={popularity} />
           <FullyBookedBadge visible={fullyBooked} />
           {workshop.Signup_Required === "Yes" ? <SignupInfoTrigger /> : null}
