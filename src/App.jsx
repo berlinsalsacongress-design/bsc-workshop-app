@@ -719,6 +719,81 @@ async function shareWorkshop(workshop) {
   }
 }
 
+
+function SignupInfoTrigger() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setOpen(true);
+        }}
+        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-zinc-200 transition hover:bg-white/10"
+      >
+        Prior Sign Up Required
+      </button>
+
+      {open ? (
+        <div
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#ff4fa3]/20 bg-[#12000d] p-6 text-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-4 text-xs uppercase tracking-[0.35em] text-[#ff4fa3]">
+              Workshop Sign-Up Info
+            </div>
+
+            <h2 className="text-2xl font-bold">
+              Workshop Sign-Up – What You Need to Know 💡
+            </h2>
+
+            <div className="mt-5 space-y-4 text-sm leading-7 text-zinc-300">
+              <p>
+                Some workshops require prior sign-up — especially workshops in the smaller rooms.
+              </p>
+
+              <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div>✅ Managing the number of participants</div>
+                <div>✅ Keeping a balanced leader/follower ratio</div>
+                <div>→ helping create smooth, high-quality workshops for everyone</div>
+              </div>
+
+              <p>
+                If your pass includes workshops, you will receive your personal sign-up link via Eventbrite 4 days before the event.
+              </p>
+
+              <div className="rounded-2xl border border-[#ff4fa3]/20 bg-[#2a0019] p-4">
+                <div className="font-semibold text-white">
+                  ⏰ Monday, August 24 — 10:00 AM (CEST)
+                </div>
+                <div className="mt-2 text-zinc-300">
+                  Please check your inbox and spam folder carefully.
+                </div>
+              </div>
+
+              <p>
+                This allows you to plan ahead and secure your spots in your favorite workshops.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setOpen(false)}
+              className="mt-6 w-full rounded-2xl bg-[#a00064] px-5 py-3 font-medium text-white transition hover:bg-[#c10078]"
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function WorkshopCard({ workshop, isFavorite, toggleFavorite, submitWorkshopRating, artistsByName, locationsByGroup, openDetails, openLocation, onShareWorkshop, capacityData, ratingsData, reminderSet = false, showReminder = false }) {
   const artists = namesForWorkshop(workshop);
   const location = locationsByGroup[workshop.Room_Group] || null;
@@ -780,7 +855,7 @@ const hasRatedWorkshop =
               <Badge category>{workshop.Category || "Workshop"}</Badge>
               {workshop.Style ? <Badge style>{workshop.Style}</Badge> : null}
               <Badge soft>{workshop.Level || "All levels"}</Badge>
-              {workshop.Signup_Required === "Yes" ? <Badge soft>Prior Sign Up Required</Badge> : null}
+              {workshop.Signup_Required === "Yes" ? <SignupInfoTrigger /> : null}
               <div className="mt-3 w-full">
   <div className="mb-1 flex items-center justify-between text-[11px] text-zinc-300">
   <span>
@@ -1284,7 +1359,7 @@ function WorkshopDetailsModal({ workshop, onClose, artistsByName, locationsByGro
           <Badge soft>{workshop.Level || "All levels"}</Badge>
           <PopularityBadge popularity={popularity} />
           <FullyBookedBadge visible={fullyBooked} />
-          {workshop.Signup_Required === "Yes" ? <Badge soft>Prior Sign Up Required</Badge> : null}
+          {workshop.Signup_Required === "Yes" ? <SignupInfoTrigger /> : null}
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-zinc-300">
