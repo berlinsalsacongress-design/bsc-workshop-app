@@ -10,6 +10,8 @@ const ADVANCED_LEVEL_ASSESSMENT_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSdVehpLy7zVnFIDcS6E1RdWjhQwpqA0tOui0-JXOlkkL-CRJA/viewform?usp=sharing&ouid=118189387469591371378";
 const DEMO_VIDEO_UPLOAD_URL =
   "https://forms.gle/qebPUS8sCajMcHFK6";
+const DANCE_PARTNER_APP_URL =
+  "REPLACE_WITH_DANCE_PARTNER_APP_LINK";
 
 const SUPABASE_URL = "https://nskzzqzioovzgamwyxyl.supabase.co";
 
@@ -163,6 +165,10 @@ function getInstagramUrl(artist) {
 
 function isDemoUploadReady() {
   return Boolean(DEMO_VIDEO_UPLOAD_URL && !DEMO_VIDEO_UPLOAD_URL.includes("REPLACE_WITH"));
+}
+
+function isDancePartnerAppReady() {
+  return Boolean(DANCE_PARTNER_APP_URL && !DANCE_PARTNER_APP_URL.includes("REPLACE_WITH"));
 }
 
 function getDemoVideoUploadUrl(workshop) {
@@ -738,6 +744,103 @@ async function shareWorkshop(workshop) {
       return "failed";
     }
   }
+}
+
+
+function FirstTimerGuide() {
+  const [openItem, setOpenItem] = useState("social");
+  const partnerAppReady = isDancePartnerAppReady();
+
+  const items = [
+    {
+      id: "social",
+      title: "💃 Social dancing first",
+      text: "Berlin Salsacongress is all about dancing, connection and community. Do not be afraid to ask people for dances — everybody was new once, and a friendly smile goes a long way.",
+    },
+    {
+      id: "planning",
+      title: "🗓 Plan your weekend, but leave space",
+      text: "Use favorites to build your personal schedule, but do not overplan every minute. Leave time for food, rest, changing rooms and spontaneous dances with new friends.",
+    },
+    {
+      id: "signup",
+      title: "🎟 Workshops with prior sign-up",
+      text: "Some smaller rooms require prior sign-up to manage capacity and keep a balanced leader/follower ratio. Look for the Prior Sign Up Required badge and check your Eventbrite email carefully before the event.",
+    },
+    {
+      id: "partner",
+      title: "🤝 Looking for dance partners?",
+      text: "We are preparing a partner app integration to help dancers connect more easily for workshops and social dancing. The link is already prepared here and will be activated once everything is ready.",
+      partner: true,
+    },
+    {
+      id: "etiquette",
+      title: "💛 Congress etiquette",
+      text: "Respect, consent and kindness matter. Ask politely, accept a no with grace, thank your partner, take care of hygiene and help us keep the dance floor welcoming for everyone.",
+    },
+    {
+      id: "comfort",
+      title: "👟 Practical comfort tips",
+      text: "Bring comfortable dance shoes, maybe an extra shirt, water breaks and enough energy for the full weekend. Berlin Salsacongress can be intense — in the best possible way.",
+    },
+  ];
+
+  return (
+    <div className="mt-5 rounded-[30px] border border-[#80045d]/25 bg-gradient-to-br from-[#80045d]/15 via-black to-[#194d2d]/15 p-6">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-pink-200">First Time at BSC?</p>
+      <h3 className="mt-2 text-2xl font-bold text-white">New Here? Welcome to the Family</h3>
+      <p className="mt-3 text-sm leading-6 text-zinc-300">
+        If this is your first Berlin Salsacongress — or even your first Salsa congress — these quick tips will help you feel at home faster.
+      </p>
+
+      <div className="mt-5 space-y-3">
+        {items.map((item) => {
+          const isOpen = openItem === item.id;
+          return (
+            <div key={item.id} className="overflow-hidden rounded-2xl border border-white/10 bg-black/30">
+              <button
+                type="button"
+                onClick={() => setOpenItem(isOpen ? "" : item.id)}
+                className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left"
+              >
+                <span className="text-sm font-semibold text-white">{item.title}</span>
+                <span className="shrink-0 text-lg text-zinc-400">{isOpen ? "−" : "+"}</span>
+              </button>
+
+              {isOpen ? (
+                <div className="border-t border-white/10 px-4 pb-4 pt-3">
+                  <p className="text-sm leading-6 text-zinc-300">{item.text}</p>
+
+                  {item.partner ? (
+                    <div className="mt-4">
+                      {partnerAppReady ? (
+                        <a
+                          href={DANCE_PARTNER_APP_URL}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center justify-center rounded-full bg-[#80045d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#96076d]"
+                        >
+                          Open Partner App {icon("external")}
+                        </a>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled
+                          className="inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#80045d]/60 px-4 py-2.5 text-xs font-semibold text-white opacity-75"
+                        >
+                          Partner App Link Coming Soon
+                        </button>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 
@@ -2668,6 +2771,8 @@ if (ratedWorkshops.includes(workshopId)) {
                 </div>
               </div>
             </div>
+
+            <FirstTimerGuide />
 
             <div className="mt-6 grid gap-5 md:grid-cols-2">
               <div className="rounded-[30px] border border-white/10 bg-white/[0.03] p-6">
