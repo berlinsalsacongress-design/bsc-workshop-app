@@ -11,7 +11,7 @@ const ADVANCED_LEVEL_ASSESSMENT_URL =
 const DEMO_VIDEO_UPLOAD_URL =
   "https://forms.gle/qebPUS8sCajMcHFK6";
 const DANCE_PARTNER_APP_URL =
-  "REPLACE_WITH_DANCE_PARTNER_APP_LINK";
+  "https://connect.udansa.com/en/sign-up";
 
 const SUPABASE_URL = "https://nskzzqzioovzgamwyxyl.supabase.co";
 
@@ -215,6 +215,44 @@ function DemoVideoUploadButton({ workshop = null, compact = false }) {
     >
       Upload Demo Video {icon("external")}
     </a>
+  );
+}
+
+
+function DancePartnerAppCard() {
+  const ready = isDancePartnerAppReady();
+
+  return (
+    <div className="mt-5 rounded-[28px] border border-emerald-400/20 bg-gradient-to-br from-emerald-500/15 via-black to-[#80045d]/15 p-5">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-200">Dance Partner App</p>
+      <h3 className="mt-2 text-xl font-bold text-white">Looking for Dance Partners?</h3>
+      <p className="mt-2 text-sm leading-6 text-zinc-300">
+        Connect with other dancers before and during Berlin Salsacongress. Find leaders, followers and dance friends for workshops, socials and your congress weekend.
+      </p>
+
+      {ready ? (
+        <a
+          href={DANCE_PARTNER_APP_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-4 inline-flex items-center justify-center rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#96076d]"
+        >
+          Open Dance Partner App {icon("external")}
+        </a>
+      ) : (
+        <button
+          type="button"
+          disabled
+          className="mt-4 inline-flex cursor-not-allowed items-center justify-center rounded-full bg-[#80045d]/60 px-5 py-3 text-sm font-semibold text-white opacity-75"
+        >
+          Dance Partner App Link Coming Soon
+        </button>
+      )}
+
+      <p className="mt-3 text-xs leading-5 text-zinc-500">
+        This external partner app is offered to help dancers connect more easily. Please use it respectfully and follow the same One Family spirit as on the dance floor.
+      </p>
+    </div>
   );
 }
 
@@ -2607,6 +2645,7 @@ if (ratedWorkshops.includes(workshopId)) {
                 <div className="rounded-2xl border border-white/10 bg-black/30 p-4">🤖 <span className="font-semibold text-white">Android:</span> Chrome → ⋮ → Add to Home Screen</div>
               </div>
             </div>
+            <DancePartnerAppCard />
             <DaySwitch value={todayViewDay} onChange={setTodayViewDay} />
             <div className="mt-6"><SearchFilters query={query} setQuery={setQuery} category={category} setCategory={setCategory} categories={categories} /></div>
             <AdvancedFilters level={levelFilter} setLevel={setLevelFilter} location={locationFilter} setLocation={setLocationFilter} partnerwork={partnerworkFilter} setPartnerwork={setPartnerworkFilter} signup={signupFilter} setSignup={setSignupFilter} styleFilter={styleFilter} setStyleFilter={setStyleFilter} levels={levels} locations={locationOptions} styles={styles} />
@@ -2771,6 +2810,8 @@ if (ratedWorkshops.includes(workshopId)) {
                 </div>
               </div>
             </div>
+
+            <DancePartnerAppCard />
 
             <FirstTimerGuide />
 
