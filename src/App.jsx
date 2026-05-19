@@ -758,27 +758,27 @@ function SignupInfoTrigger() {
 
       {open ? (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-3"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4"
           onClick={() => setOpen(false)}
         >
           <div
-            className="max-h-[82vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#ff4fa3]/20 bg-[#12000d] p-5 text-white shadow-2xl sm:p-6"
+            className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[#ff4fa3]/20 bg-[#12000d] p-6 text-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mb-3 text-[11px] uppercase tracking-[0.3em] text-[#ff4fa3] sm:text-xs">
+            <div className="mb-4 text-xs uppercase tracking-[0.35em] text-[#ff4fa3]">
               Workshop Sign-Up Info
             </div>
 
-            <h2 className="text-xl font-bold leading-tight sm:text-2xl">
+            <h2 className="text-2xl font-bold">
               Workshop Sign-Up – What You Need to Know 💡
             </h2>
 
-            <div className="mt-4 space-y-3 text-sm leading-6 text-zinc-300">
+            <div className="mt-5 space-y-4 text-sm leading-7 text-zinc-300">
               <p>
                 Some workshops require prior sign-up — especially workshops in the smaller rooms.
               </p>
 
-              <div className="space-y-1.5 rounded-2xl border border-white/10 bg-white/5 p-3">
+              <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div>✅ Managing the number of participants</div>
                 <div>✅ Keeping a balanced leader/follower ratio</div>
                 <div>→ helping create smooth, high-quality workshops for everyone</div>
@@ -788,11 +788,11 @@ function SignupInfoTrigger() {
                 If your pass includes workshops, you will receive your personal sign-up link via Eventbrite 4 days before the event.
               </p>
 
-              <div className="rounded-2xl border border-[#ff4fa3]/20 bg-[#2a0019] p-3">
+              <div className="rounded-2xl border border-[#ff4fa3]/20 bg-[#2a0019] p-4">
                 <div className="font-semibold text-white">
                   ⏰ Monday, August 24 — 10:00 AM (CEST)
                 </div>
-                <div className="mt-1.5 text-zinc-300">
+                <div className="mt-2 text-zinc-300">
                   Please check your inbox and spam folder carefully.
                 </div>
               </div>
@@ -802,14 +802,12 @@ function SignupInfoTrigger() {
               </p>
             </div>
 
-            <div className="sticky bottom-0 -mx-5 mt-4 bg-[#12000d] px-5 pb-1 pt-3 sm:-mx-6 sm:px-6">
-              <button
-                onClick={() => setOpen(false)}
-                className="w-full rounded-2xl bg-[#a00064] px-5 py-3 font-medium text-white transition hover:bg-[#c10078]"
-              >
-                Got it
-              </button>
-            </div>
+            <button
+              onClick={() => setOpen(false)}
+              className="mt-6 w-full rounded-2xl bg-[#a00064] px-5 py-3 font-medium text-white transition hover:bg-[#c10078]"
+            >
+              Got it
+            </button>
           </div>
         </div>
       ) : null}
@@ -2204,6 +2202,12 @@ const downloadStoryCard = async () => {
   const todayDay = todayViewDay;
   const todayWorkshops = filteredWorkshops.filter((workshop) => workshop.Day === todayDay);
   const nextSlot = todayWorkshops[0]?.Start_Time || "15:30";
+  const eventDayLabels = {
+    Friday: "Friday, August 28",
+    Saturday: "Saturday, August 29",
+    Sunday: "Sunday, August 30",
+  };
+  const todayEventLabel = eventDayLabels[todayDay] || todayDay;
 
   async function toggleFavorite(id) {
 
@@ -2363,7 +2367,7 @@ if (ratedWorkshops.includes(workshopId)) {
         <OfflineNotice dataStatus={dataStatus} lastUpdated={lastUpdated} />
         {activeTab === "today" ? (
           <div>
-            <Hero eyebrow={`Today · ${todayDay}`} title={`Next workshops start at ${nextSlot}`}>
+            <Hero eyebrow="Upcoming workshop day" title={`Next workshop starts on ${todayEventLabel} at ${nextSlot}`}>
               Your smart companion for the workshop day. Save favorites, check live capacity, rate workshops, and move smoothly between venues.
             </Hero>
             <div className="mt-5 rounded-[28px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/20 via-black to-[#194d2d]/20 p-5">
@@ -2380,7 +2384,7 @@ if (ratedWorkshops.includes(workshopId)) {
             <DaySwitch value={todayViewDay} onChange={setTodayViewDay} />
             <div className="mt-6"><SearchFilters query={query} setQuery={setQuery} category={category} setCategory={setCategory} categories={categories} /></div>
             <AdvancedFilters level={levelFilter} setLevel={setLevelFilter} location={locationFilter} setLocation={setLocationFilter} partnerwork={partnerworkFilter} setPartnerwork={setPartnerworkFilter} signup={signupFilter} setSignup={setSignupFilter} styleFilter={styleFilter} setStyleFilter={setStyleFilter} levels={levels} locations={locationOptions} styles={styles} />
-            <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.03] p-5"><p className="text-xs uppercase tracking-[0.2em] text-zinc-500">Starting soon</p><h3 className="mt-1 text-xl font-bold text-white">{nextSlot} Workshops</h3></div>
+            <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.03] p-5"><p className="text-xs uppercase tracking-[0.2em] text-zinc-500">First workshop block</p><h3 className="mt-1 text-xl font-bold text-white">{todayEventLabel} · {nextSlot} Workshops</h3></div>
             {renderWorkshopList(todayWorkshops)}
 
             <div className="mt-8 grid gap-3 md:grid-cols-4">
