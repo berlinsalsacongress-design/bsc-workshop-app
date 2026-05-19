@@ -1475,7 +1475,7 @@ function artistMatchesWorkshop(artistName, workshop) {
   return workshop.Artist_1 === artistName || workshop.Artist_2 === artistName;
 }
 
-function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavorite, artistsByName, locationsByGroup, openWorkshopDetails, openLocation, onShareWorkshop }) {
+function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavorite, artistsByName, locationsByGroup, openWorkshopDetails, openLocation, onShareWorkshop, submitWorkshopRating, capacityData, ratingsData }) {
   if (!artist) return null;
   const artistWorkshops = workshops
     .filter((workshop) => artistMatchesWorkshop(artist.Artist_Name, workshop))
@@ -1506,7 +1506,7 @@ function ArtistDetailsModal({ artist, workshops, onClose, favorites, toggleFavor
           {artistWorkshops.length ? (
             <div className="grid gap-3">
               {artistWorkshops.map((workshop) => (
-                <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} submitWorkshopRating={submitWorkshopRating} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={openWorkshopDetails} openLocation={openLocation} onShareWorkshop={onShareWorkshop} />
+                <WorkshopCard key={workshop.Workshop_ID} workshop={workshop} submitWorkshopRating={submitWorkshopRating} isFavorite={favorites.includes(workshop.Workshop_ID)} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openDetails={openWorkshopDetails} openLocation={openLocation} onShareWorkshop={onShareWorkshop} capacityData={capacityData || {}} ratingsData={ratingsData || {}} />
               ))}
             </div>
           ) : (
@@ -1936,6 +1936,7 @@ const ratingsChannel = supabase
   const [weatherLoading, setWeatherLoading] = useState(false);
   const [weatherError, setWeatherError] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
+  const [navigationReturn, setNavigationReturn] = useState(null);
   const shareCardRef = React.useRef(null);
 
 const downloadStoryCard = async () => {
@@ -2374,6 +2375,20 @@ if (ratedWorkshops.includes(workshopId)) {
   function openLocationFromWorkshop(locationName) {
     const canonicalLocation = String(locationName || "").toLowerCase().includes("tempodrom") ? "Tempodrom" : locationName;
 
+    setNavigationReturn({
+      tab: activeTab,
+      scrollY: window.scrollY,
+      selectedDay,
+      todayViewDay,
+      query,
+      category,
+      levelFilter,
+      locationFilter,
+      partnerworkFilter,
+      signupFilter,
+      styleFilter,
+    });
+
     setSelectedWorkshop(null);
     setSelectedArtist(null);
     setStoryOpen(false);
@@ -2384,6 +2399,28 @@ if (ratedWorkshops.includes(workshopId)) {
       const element = document.getElementById(targetId);
       if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 180);
+  }
+
+  function returnFromLocation() {
+    if (!navigationReturn) return;
+
+    setActiveTab(navigationReturn.tab || "today");
+    if (navigationReturn.selectedDay) setSelectedDay(navigationReturn.selectedDay);
+    if (navigationReturn.todayViewDay) setTodayViewDay(navigationReturn.todayViewDay);
+    if (navigationReturn.query !== undefined) setQuery(navigationReturn.query);
+    if (navigationReturn.category) setCategory(navigationReturn.category);
+    if (navigationReturn.levelFilter) setLevelFilter(navigationReturn.levelFilter);
+    if (navigationReturn.locationFilter) setLocationFilter(navigationReturn.locationFilter);
+    if (navigationReturn.partnerworkFilter) setPartnerworkFilter(navigationReturn.partnerworkFilter);
+    if (navigationReturn.signupFilter) setSignupFilter(navigationReturn.signupFilter);
+    if (navigationReturn.styleFilter) setStyleFilter(navigationReturn.styleFilter);
+
+    const previousScrollY = navigationReturn.scrollY || 0;
+    setNavigationReturn(null);
+
+    window.setTimeout(() => {
+      window.scrollTo({ top: previousScrollY, behavior: "smooth" });
+    }, 220);
   }
 
   async function handleShareWorkshop(workshop) {
@@ -2543,6 +2580,15 @@ if (ratedWorkshops.includes(workshopId)) {
 
         {activeTab === "locations" ? (
   <div>
+    {navigationReturn ? (
+      <button
+        onClick={returnFromLocation}
+        className="mb-4 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10"
+      >
+        ← Back to previous view
+      </button>
+    ) : null}
+
     <Hero eyebrow="Navigation" title="Locations & Venues" green>
       Quickly find your workshop locations, open Google Maps and move smoothly between venues during the congress weekend.
     </Hero>
@@ -2804,7 +2850,7 @@ if (ratedWorkshops.includes(workshopId)) {
 
       <WorkshopDetailsModal workshop={selectedWorkshop} onClose={() => setSelectedWorkshop(null)} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} capacityData={capacityData} />
 
-      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} />
+      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} submitWorkshopRating={submitWorkshopRating} capacityData={capacityData} ratingsData={ratingsData} />
 
       <StoryCardModal
   open={storyOpen}
