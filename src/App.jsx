@@ -2201,13 +2201,99 @@ const downloadStoryCard = async () => {
   const congressPersonality = useMemo(() => getCongressPersonality(congressStats, favoriteWorkshops), [congressStats, favoriteWorkshops]);
   const todayDay = todayViewDay;
   const todayWorkshops = filteredWorkshops.filter((workshop) => workshop.Day === todayDay);
-  const nextSlot = todayWorkshops[0]?.Start_Time || "15:30";
   const eventDayLabels = {
     Friday: "Friday, August 28",
     Saturday: "Saturday, August 29",
     Sunday: "Sunday, August 30",
   };
   const todayEventLabel = eventDayLabels[todayDay] || todayDay;
+
+  function getWorkshopDateTime(day, time) {
+    const date = WORKSHOP_EVENT_DATES[day];
+    if (!date || !time) return null;
+    const normalizedTime = String(time).trim();
+    return new Date(`${date}T${normalizedTime}:00`);
+  }
+
+  function getTodayBlockInfo(day, visibleWorkshops) {
+    const sorted = visibleWorkshops
+      .slice()
+      .sort((a, b) => timeToMinutes(a.Start_Time) - timeToMinutes(b.Start_Time));
+
+    if (!sorted.length) {
+      return {
+        heroEyebrow: "Workshop day",
+        heroTitle: `No workshops found for ${eventDayLabels[day] || day}`,
+        blockEyebrow: "No workshops found",
+        blockTitle: "Try changing your filters",
+      };
+    }
+
+    const slots = sorted.reduce((acc, workshop) => {
+      const key = workshop.Start_Time;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(workshop);
+      return acc;
+    }, {});
+
+    const firstWorkshop = sorted[0];
+    const lastWorkshop = sorted.slice().sort((a, b) => timeToMinutes(b.End_Time) - timeToMinutes(a.End_Time))[0];
+    const firstStart = getWorkshopDateTime(day, firstWorkshop.Start_Time);
+    const lastEnd = getWorkshopDateTime(day, lastWorkshop.End_Time);
+    const now = new Date();
+
+    const happening = sorted.find((workshop) => {
+      const start = getWorkshopDateTime(day, workshop.Start_Time);
+      const end = getWorkshopDateTime(day, workshop.End_Time);
+      return start && end && now >= start && now < end;
+    });
+
+    if (happening) {
+      const count = slots[happening.Start_Time]?.length || 1;
+      return {
+        heroEyebrow: "Happening now",
+        heroTitle: `${todayEventLabel} · ${happening.Start_Time} workshops are happening now`,
+        blockEyebrow: "Happening now",
+        blockTitle: `${todayEventLabel} · ${happening.Start_Time} Workshops`,
+        count,
+      };
+    }
+
+    const nextWorkshop = sorted.find((workshop) => {
+      const start = getWorkshopDateTime(day, workshop.Start_Time);
+      return start && now < start;
+    });
+
+    if (nextWorkshop) {
+      const label = firstStart && now < firstStart ? "First workshop block" : "Next workshop block";
+      const count = slots[nextWorkshop.Start_Time]?.length || 1;
+      return {
+        heroEyebrow: firstStart && now < firstStart ? "Upcoming workshop day" : "Next workshop block",
+        heroTitle: `Next workshop starts on ${todayEventLabel} at ${nextWorkshop.Start_Time}`,
+        blockEyebrow: label,
+        blockTitle: `${todayEventLabel} · ${nextWorkshop.Start_Time} Workshops`,
+        count,
+      };
+    }
+
+    if (lastEnd && now >= lastEnd) {
+      return {
+        heroEyebrow: "Workshop day completed",
+        heroTitle: `${todayEventLabel} workshops are completed`,
+        blockEyebrow: "Completed",
+        blockTitle: `${todayEventLabel} · All workshop blocks finished`,
+      };
+    }
+
+    return {
+      heroEyebrow: "Workshop day",
+      heroTitle: `${todayEventLabel} workshops`,
+      blockEyebrow: "Workshop block",
+      blockTitle: `${todayEventLabel} Workshops`,
+    };
+  }
+
+  const todayBlockInfo = getTodayBlockInfo(todayDay, todayWorkshops);
 
   async function toggleFavorite(id) {
 
@@ -2367,7 +2453,7 @@ if (ratedWorkshops.includes(workshopId)) {
         <OfflineNotice dataStatus={dataStatus} lastUpdated={lastUpdated} />
         {activeTab === "today" ? (
           <div>
-            <Hero eyebrow="Upcoming workshop day" title={`Next workshop starts on ${todayEventLabel} at ${nextSlot}`}>
+            <Hero eyebrow={todayBlockInfo.heroEyebrow} title={todayBlockInfo.heroTitle}>
               Your smart companion for the workshop day. Save favorites, check live capacity, rate workshops, and move smoothly between venues.
             </Hero>
             <div className="mt-5 rounded-[28px] border border-[#80045d]/30 bg-gradient-to-br from-[#80045d]/20 via-black to-[#194d2d]/20 p-5">
@@ -2384,7 +2470,7 @@ if (ratedWorkshops.includes(workshopId)) {
             <DaySwitch value={todayViewDay} onChange={setTodayViewDay} />
             <div className="mt-6"><SearchFilters query={query} setQuery={setQuery} category={category} setCategory={setCategory} categories={categories} /></div>
             <AdvancedFilters level={levelFilter} setLevel={setLevelFilter} location={locationFilter} setLocation={setLocationFilter} partnerwork={partnerworkFilter} setPartnerwork={setPartnerworkFilter} signup={signupFilter} setSignup={setSignupFilter} styleFilter={styleFilter} setStyleFilter={setStyleFilter} levels={levels} locations={locationOptions} styles={styles} />
-            <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.03] p-5"><p className="text-xs uppercase tracking-[0.2em] text-zinc-500">First workshop block</p><h3 className="mt-1 text-xl font-bold text-white">{todayEventLabel} · {nextSlot} Workshops</h3></div>
+            <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.03] p-5"><p className="text-xs uppercase tracking-[0.2em] text-zinc-500">{todayBlockInfo.blockEyebrow}</p><h3 className="mt-1 text-xl font-bold text-white">{todayBlockInfo.blockTitle}</h3></div>
             {renderWorkshopList(todayWorkshops)}
 
             <div className="mt-8 grid gap-3 md:grid-cols-4">
