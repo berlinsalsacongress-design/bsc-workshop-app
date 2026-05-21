@@ -2079,6 +2079,60 @@ const ratingsChannel = supabase
   const [shareNotice, setShareNotice] = useState("");
   const [navigationReturn, setNavigationReturn] = useState(null);
   const shareCardRef = React.useRef(null);
+  const modalHistoryStackRef = React.useRef([]);
+  const suppressNextPopRef = React.useRef(false);
+
+  function pushModalHistory(type) {
+    if (typeof window === "undefined") return;
+    window.history.pushState(
+      { ...(window.history.state || {}), bscModal: type, bscModalTime: Date.now() },
+      "",
+      window.location.href
+    );
+    modalHistoryStackRef.current.push(type);
+  }
+
+  function closeModalWithHistory(closeModal) {
+    closeModal();
+
+    if (modalHistoryStackRef.current.length > 0) {
+      modalHistoryStackRef.current.pop();
+      suppressNextPopRef.current = true;
+      window.history.back();
+
+      window.setTimeout(() => {
+        suppressNextPopRef.current = false;
+      }, 350);
+    }
+  }
+
+  function openWorkshopDetails(workshop) {
+    setSelectedWorkshop(workshop);
+    pushModalHistory("workshop");
+  }
+
+  function closeWorkshopDetails() {
+    closeModalWithHistory(() => setSelectedWorkshop(null));
+  }
+
+  function openArtistDetails(artist) {
+    setSelectedArtist(artist);
+    pushModalHistory("artist");
+  }
+
+  function closeArtistDetails() {
+    closeModalWithHistory(() => setSelectedArtist(null));
+  }
+
+  function openStoryCard() {
+    setStoryOpen(true);
+    pushModalHistory("story");
+  }
+
+  function closeStoryCard() {
+    closeModalWithHistory(() => setStoryOpen(false));
+  }
+
 
 const downloadStoryCard = async () => {
   if (!shareCardRef.current) return;
@@ -2097,6 +2151,36 @@ const downloadStoryCard = async () => {
     console.error("Error generating image:", error);
   }
 };
+
+  useEffect(() => {
+    function handleBrowserBack() {
+      if (suppressNextPopRef.current) {
+        suppressNextPopRef.current = false;
+        return;
+      }
+
+      if (selectedWorkshop) {
+        setSelectedWorkshop(null);
+        modalHistoryStackRef.current.pop();
+        return;
+      }
+
+      if (selectedArtist) {
+        setSelectedArtist(null);
+        modalHistoryStackRef.current.pop();
+        return;
+      }
+
+      if (storyOpen) {
+        setStoryOpen(false);
+        modalHistoryStackRef.current.pop();
+      }
+    }
+
+    window.addEventListener("popstate", handleBrowserBack);
+    return () => window.removeEventListener("popstate", handleBrowserBack);
+  }, [selectedWorkshop, selectedArtist, storyOpen]);
+
   useEffect(() => {
     const saved = localStorage.getItem("bsc-favorites");
     if (saved) setFavorites(JSON.parse(saved));
@@ -2681,7 +2765,7 @@ if (ratedWorkshops.includes(workshopId)) {
             <div className="mt-6">
               {favoriteWorkshops.length ? (
                 <div>
-                  <CongressStats stats={congressStats} personality={congressPersonality} onOpenStory={() => setStoryOpen(true)} />
+                  <CongressStats stats={congressStats} personality={congressPersonality} onOpenStory={openStoryCard} />
                   <ConflictWarnings conflicts={favoriteConflicts} />
                   <FavoriteTransitions transitions={favoriteTransitions} />
                   {renderWorkshopList(favoriteWorkshops)}
@@ -2707,10 +2791,10 @@ if (ratedWorkshops.includes(workshopId)) {
                 return (
                   <div key={artist.Artist_Name} className="rounded-[28px] border border-white/10 bg-gradient-to-br from-zinc-950 to-black p-5">
                     <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-500">{artist.Country}</p>
-                    <button onClick={() => setSelectedArtist(artist)} className="text-left"><h3 className="mt-1 text-xl font-bold text-white transition hover:text-pink-100">{artist.Artist_Name}</h3></button>
+                    <button onClick={() => openArtistDetails(artist)} className="text-left"><h3 className="mt-1 text-xl font-bold text-white transition hover:text-pink-100">{artist.Artist_Name}</h3></button>
                     <p className="mt-2 text-sm text-zinc-400">{artist.Style}</p>
                     <div className="mt-5 flex flex-wrap gap-2">
-                      <button onClick={() => setSelectedArtist(artist)} className="rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-4 py-2 text-sm text-pink-100 hover:bg-[#80045d]/30">View workshops · {count}</button>
+                      <button onClick={() => openArtistDetails(artist)} className="rounded-full border border-[#80045d]/30 bg-[#80045d]/20 px-4 py-2 text-sm text-pink-100 hover:bg-[#80045d]/30">View workshops · {count}</button>
                       {getInstagramUrl(artist) ? <a href={getInstagramUrl(artist)} onClick={(event) => openExternalUrl(event, getInstagramUrl(artist))} target="_blank" rel="noreferrer" className="rounded-full bg-[#80045d] px-4 py-2 text-sm font-medium text-white">{artist.Instagram_Handle || "Instagram"} {icon("external")}</a> : null}
                     </div>
                   </div>
@@ -2994,13 +3078,13 @@ if (ratedWorkshops.includes(workshopId)) {
         ) : null}
       </main>
 
-      <WorkshopDetailsModal workshop={selectedWorkshop} onClose={() => setSelectedWorkshop(null)} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} capacityData={capacityData} />
+      <WorkshopDetailsModal workshop={selectedWorkshop} onClose={closeWorkshopDetails} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} capacityData={capacityData} />
 
-      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => setSelectedArtist(null)} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={setSelectedWorkshop} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} submitWorkshopRating={submitWorkshopRating} capacityData={capacityData} ratingsData={ratingsData} />
+      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={closeArtistDetails} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={openWorkshopDetails} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} submitWorkshopRating={submitWorkshopRating} capacityData={capacityData} ratingsData={ratingsData} />
 
       <StoryCardModal
   open={storyOpen}
-  onClose={() => setStoryOpen(false)}
+  onClose={closeStoryCard}
   stats={congressStats}
   personality={congressPersonality}
   shareCardRef={shareCardRef}
