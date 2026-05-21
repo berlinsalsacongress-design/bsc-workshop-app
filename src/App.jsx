@@ -2079,60 +2079,71 @@ const ratingsChannel = supabase
   const [shareNotice, setShareNotice] = useState("");
   const [navigationReturn, setNavigationReturn] = useState(null);
   const shareCardRef = React.useRef(null);
-  const modalHistoryStackRef = React.useRef([]);
-  const suppressNextPopRef = React.useRef(false);
+  const modalHistoryRef = React.useRef(null);
 
   function pushModalHistory(type) {
-    if (typeof window === "undefined") return;
-    window.history.pushState(
-      { ...(window.history.state || {}), bscModal: type, bscModalTime: Date.now() },
-      "",
-      window.location.href
-    );
-    modalHistoryStackRef.current.push(type);
+    const token = `${type}-${Date.now()}`;
+    const state = { ...(window.history.state || {}), bscModal: type, bscModalToken: token };
+
+    if (modalHistoryRef.current) {
+      window.history.replaceState(state, "", window.location.href);
+    } else {
+      window.history.pushState(state, "", window.location.href);
+    }
+
+    modalHistoryRef.current = { type, token };
   }
 
-  function closeModalWithHistory(closeModal) {
-    closeModal();
+  function clearOpenModals() {
+    modalHistoryRef.current = null;
+    setSelectedWorkshop(null);
+    setSelectedArtist(null);
+    setStoryOpen(false);
+    modalHistoryRef.current = null;
+  }
 
-    if (modalHistoryStackRef.current.length > 0) {
-      modalHistoryStackRef.current.pop();
-      suppressNextPopRef.current = true;
+  function closeModalWithHistory(fallbackType = null) {
+    if (modalHistoryRef.current && (!fallbackType || modalHistoryRef.current.type === fallbackType)) {
       window.history.back();
-
-      window.setTimeout(() => {
-        suppressNextPopRef.current = false;
-      }, 350);
+      return;
     }
+
+    clearOpenModals();
   }
 
   function openWorkshopDetails(workshop) {
-    setSelectedWorkshop(workshop);
+    if (!workshop) return;
     pushModalHistory("workshop");
-  }
-
-  function closeWorkshopDetails() {
-    closeModalWithHistory(() => setSelectedWorkshop(null));
+    setSelectedArtist(null);
+    setStoryOpen(false);
+    setSelectedWorkshop(workshop);
   }
 
   function openArtistDetails(artist) {
-    setSelectedArtist(artist);
+    if (!artist) return;
     pushModalHistory("artist");
-  }
-
-  function closeArtistDetails() {
-    closeModalWithHistory(() => setSelectedArtist(null));
+    setSelectedWorkshop(null);
+    setStoryOpen(false);
+    setSelectedArtist(artist);
   }
 
   function openStoryCard() {
-    setStoryOpen(true);
     pushModalHistory("story");
+    setSelectedWorkshop(null);
+    setSelectedArtist(null);
+    setStoryOpen(true);
   }
 
-  function closeStoryCard() {
-    closeModalWithHistory(() => setStoryOpen(false));
-  }
+  useEffect(() => {
+    const handlePopState = () => {
+      if (modalHistoryRef.current) {
+        clearOpenModals();
+      }
+    };
 
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
 const downloadStoryCard = async () => {
   if (!shareCardRef.current) return;
@@ -2151,36 +2162,6 @@ const downloadStoryCard = async () => {
     console.error("Error generating image:", error);
   }
 };
-
-  useEffect(() => {
-    function handleBrowserBack() {
-      if (suppressNextPopRef.current) {
-        suppressNextPopRef.current = false;
-        return;
-      }
-
-      if (selectedWorkshop) {
-        setSelectedWorkshop(null);
-        modalHistoryStackRef.current.pop();
-        return;
-      }
-
-      if (selectedArtist) {
-        setSelectedArtist(null);
-        modalHistoryStackRef.current.pop();
-        return;
-      }
-
-      if (storyOpen) {
-        setStoryOpen(false);
-        modalHistoryStackRef.current.pop();
-      }
-    }
-
-    window.addEventListener("popstate", handleBrowserBack);
-    return () => window.removeEventListener("popstate", handleBrowserBack);
-  }, [selectedWorkshop, selectedArtist, storyOpen]);
-
   useEffect(() => {
     const saved = localStorage.getItem("bsc-favorites");
     if (saved) setFavorites(JSON.parse(saved));
@@ -2684,7 +2665,7 @@ if (ratedWorkshops.includes(workshopId)) {
                         toggleFavorite={toggleFavorite}
                         artistsByName={artistsByName}
                         locationsByGroup={locationsByGroup}
-                        openDetails={setSelectedWorkshop}
+                        openDetails={openWorkshopDetails}
                         openLocation={openLocationFromWorkshop}
                         onShareWorkshop={handleShareWorkshop}
                       />
@@ -3078,13 +3059,13 @@ if (ratedWorkshops.includes(workshopId)) {
         ) : null}
       </main>
 
-      <WorkshopDetailsModal workshop={selectedWorkshop} onClose={closeWorkshopDetails} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} capacityData={capacityData} />
+      <WorkshopDetailsModal workshop={selectedWorkshop} onClose={() => closeModalWithHistory("workshop")} artistsByName={artistsByName} locationsByGroup={locationsByGroup} isFavorite={selectedWorkshop ? favorites.includes(selectedWorkshop.Workshop_ID) : false} toggleFavorite={toggleFavorite} favoriteWorkshops={favoriteWorkshops} openLocation={openLocationFromWorkshop} reminderSet={selectedWorkshop ? reminders.includes(selectedWorkshop.Workshop_ID) : false} toggleReminder={toggleReminder} onShareWorkshop={handleShareWorkshop} capacityData={capacityData} />
 
-      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={closeArtistDetails} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={openWorkshopDetails} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} submitWorkshopRating={submitWorkshopRating} capacityData={capacityData} ratingsData={ratingsData} />
+      <ArtistDetailsModal artist={selectedArtist} workshops={workshops} onClose={() => closeModalWithHistory("artist")} favorites={favorites} toggleFavorite={toggleFavorite} artistsByName={artistsByName} locationsByGroup={locationsByGroup} openWorkshopDetails={openWorkshopDetails} openLocation={openLocationFromWorkshop} onShareWorkshop={handleShareWorkshop} submitWorkshopRating={submitWorkshopRating} capacityData={capacityData} ratingsData={ratingsData} />
 
       <StoryCardModal
   open={storyOpen}
-  onClose={closeStoryCard}
+  onClose={() => closeModalWithHistory("story")}
   stats={congressStats}
   personality={congressPersonality}
   shareCardRef={shareCardRef}
