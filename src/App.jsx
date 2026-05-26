@@ -13,6 +13,12 @@ const DEMO_VIDEO_UPLOAD_URL =
 const DANCE_PARTNER_APP_URL =
   "https://connect.udansa.com/en/sign-up";
 
+// Public release reset:
+// Capacity and rating data before this timestamp is ignored in the app.
+// This keeps beta test data from influencing the live participant experience.
+const PUBLIC_STATS_START_AT = "2026-05-26T00:00:00.000Z";
+const RATED_WORKSHOPS_STORAGE_KEY = "ratedWorkshops-public-release-v1";
+
 const SUPABASE_URL = "https://nskzzqzioovzgamwyxyl.supabase.co";
 
 const SUPABASE_ANON_KEY =
@@ -999,7 +1005,7 @@ const averageRating =
 const totalRatings =
   workshopRatings?.total_ratings || 0;
   const ratedWorkshops =
-  JSON.parse(localStorage.getItem("ratedWorkshops") || "[]");
+  JSON.parse(localStorage.getItem(RATED_WORKSHOPS_STORAGE_KEY) || "[]");
 
 const hasRatedWorkshop =
   ratedWorkshops.includes(workshop.Workshop_ID);
@@ -1952,10 +1958,12 @@ export default function App() {
   async function loadCapacityData() {
     const { data, error } = await supabase
       .from("workshop_capacity")
-      .select("*");
+      .select("*")
+      .gte("created_at", PUBLIC_STATS_START_AT);
 
     if (error) {
-      console.log("LOAD CAPACITY ERROR:", error);
+      console.log("LOAD CAPACITY ERROR AFTER PUBLIC RESET:", error);
+      setCapacityData({});
       return;
     }
 
@@ -1966,14 +1974,15 @@ export default function App() {
     });
 
     setCapacityData(mappedData);
-    console.log("CAPACITY DATA:", mappedData);
+    console.log("CAPACITY DATA AFTER PUBLIC RESET:", mappedData);
   }
 
   loadCapacityData();
   async function loadRatingsData() {
   const { data, error } = await supabase
     .from("workshop_ratings")
-    .select("*");
+    .select("*")
+    .gte("created_at", PUBLIC_STATS_START_AT);
 
   if (error) {
     console.log("LOAD RATINGS ERROR:", error);
@@ -2024,6 +2033,7 @@ loadRatingsData();
         const updatedItem = payload.new;
 
         if (!updatedItem?.workshop_id) return;
+        if (updatedItem.created_at && new Date(updatedItem.created_at) < new Date(PUBLIC_STATS_START_AT)) return;
 
         setCapacityData((current) => ({
           ...current,
@@ -2534,18 +2544,36 @@ const downloadStoryCard = async () => {
   },
 }));
 
-  const { error } = await supabase
+  let { error } = await supabase
   .from("workshop_capacity")
   .upsert(
     {
       workshop_id: id,
       current_saved: newCapacity,
       room_capacity: roomCapacity,
+      created_at: new Date().toISOString(),
     },
     {
       onConflict: "workshop_id",
     }
   );
+
+  if (error) {
+    const retry = await supabase
+      .from("workshop_capacity")
+      .upsert(
+        {
+          workshop_id: id,
+          current_saved: newCapacity,
+          room_capacity: roomCapacity,
+        },
+        {
+          onConflict: "workshop_id",
+        }
+      );
+
+    error = retry.error;
+  }
 
   console.log("CAPACITY UPDATE:", newCapacity);
   console.log("CAPACITY ERROR:", error);
@@ -2553,23 +2581,35 @@ const downloadStoryCard = async () => {
 async function submitWorkshopRating(workshopId, rating) {
   
   const ratedWorkshops =
-  JSON.parse(localStorage.getItem("ratedWorkshops") || "[]");
+  JSON.parse(localStorage.getItem(RATED_WORKSHOPS_STORAGE_KEY) || "[]");
 
 if (ratedWorkshops.includes(workshopId)) {
   return;
 }
-  const { error } = await supabase
+  let { error } = await supabase
     .from("workshop_ratings")
     .insert({
       workshop_id: workshopId,
       rating,
+      created_at: new Date().toISOString(),
     });
+
+  if (error) {
+    const retry = await supabase
+      .from("workshop_ratings")
+      .insert({
+        workshop_id: workshopId,
+        rating,
+      });
+
+    error = retry.error;
+  }
 
   console.log("RATING SUBMITTED:", workshopId, rating);
   console.log("RATING ERROR:", error);
   if (!error) {
   localStorage.setItem(
-    "ratedWorkshops",
+    RATED_WORKSHOPS_STORAGE_KEY,
     JSON.stringify([...ratedWorkshops, workshopId])
   );
 }
