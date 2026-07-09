@@ -12,6 +12,9 @@ const DEMO_VIDEO_UPLOAD_URL =
   "https://forms.gle/qebPUS8sCajMcHFK6";
 const DANCE_PARTNER_APP_URL =
   "https://connect.udansa.com/en/sign-up";
+const UNBREAKABLE_DANCER_URL =
+  "https://apts.americanptstuttgart.com/p/the-unbreakable-dancer";
+
 
 // Public release reset:
 // Capacity and rating data before this timestamp is ignored in the app.
@@ -258,6 +261,57 @@ function DancePartnerAppCard() {
       <p className="mt-3 text-xs leading-5 text-zinc-500">
         This external partner app is offered to help dancers connect more easily. Please use it respectfully and follow the same One Family spirit as on the dance floor.
       </p>
+    </div>
+  );
+}
+
+
+function HealthWellbeingCard() {
+  return (
+    <div className="mt-5 rounded-[30px] border border-emerald-400/25 bg-gradient-to-br from-emerald-500/15 via-black to-[#80045d]/15 p-6">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-200">Health &amp; Wellbeing</p>
+      <h3 className="mt-2 text-2xl font-bold text-white">Healthy Dancers Dance Longer</h3>
+      <p className="mt-3 text-sm leading-6 text-zinc-300">
+        Your body is your most valuable dance partner. Throughout the weekend, we&apos;re happy to have <span className="font-semibold text-white">The Unbreakable Dancer</span> available as an official partner. Join the free seminar on Sunday at 15:00 and learn practical ways to stay healthy, recover faster, and keep dancing pain-free.
+      </p>
+      <div className="mt-5 flex flex-wrap gap-2">
+        <span className="rounded-full border border-emerald-200/15 bg-black/20 px-3 py-1.5 text-xs text-emerald-100">Injury prevention</span>
+        <span className="rounded-full border border-emerald-200/15 bg-black/20 px-3 py-1.5 text-xs text-emerald-100">Recovery</span>
+        <span className="rounded-full border border-emerald-200/15 bg-black/20 px-3 py-1.5 text-xs text-emerald-100">Mobility</span>
+        <span className="rounded-full border border-emerald-200/15 bg-black/20 px-3 py-1.5 text-xs text-emerald-100">Dance longer</span>
+      </div>
+      <a
+        href={UNBREAKABLE_DANCER_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-5 inline-flex items-center justify-center rounded-full bg-[#80045d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#96076d]"
+      >
+        Visit The Unbreakable Dancer {icon("external")}
+      </a>
+    </div>
+  );
+}
+
+function SpecialSeminarBanner({ day }) {
+  if (day !== "Sunday") return null;
+
+  return (
+    <div className="mb-6 rounded-[30px] border border-emerald-400/30 bg-gradient-to-br from-emerald-500/20 via-black to-[#80045d]/20 p-5 shadow-2xl shadow-black/30">
+      <p className="text-[11px] uppercase tracking-[0.2em] text-emerald-200">🧠 Today&apos;s Special Seminar</p>
+      <h3 className="mt-2 text-2xl font-bold text-white">The Unbreakable Dancer</h3>
+      <p className="mt-1 text-sm font-semibold text-emerald-100">15:00 • 30 minutes</p>
+      <p className="mt-3 text-lg font-bold text-white">Dance More. Hurt Less.</p>
+      <p className="mt-2 text-sm leading-6 text-zinc-300">
+        Learn practical injury prevention and recovery strategies for every dancer.
+      </p>
+      <a
+        href={UNBREAKABLE_DANCER_URL}
+        target="_blank"
+        rel="noreferrer"
+        className="mt-4 inline-flex items-center justify-center rounded-full border border-emerald-200/20 bg-emerald-200/10 px-4 py-2.5 text-xs font-semibold text-emerald-50 transition hover:bg-emerald-200/20"
+      >
+        Learn More {icon("external")}
+      </a>
     </div>
   );
 }
@@ -2755,6 +2809,7 @@ if (ratedWorkshops.includes(workshopId)) {
             <div className="mt-6"><SearchFilters query={query} setQuery={setQuery} category={category} setCategory={setCategory} categories={categories} /></div>
             <AdvancedFilters level={levelFilter} setLevel={setLevelFilter} location={locationFilter} setLocation={setLocationFilter} partnerwork={partnerworkFilter} setPartnerwork={setPartnerworkFilter} signup={signupFilter} setSignup={setSignupFilter} styleFilter={styleFilter} setStyleFilter={setStyleFilter} levels={levels} locations={locationOptions} styles={styles} />
             <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.03] p-5"><p className="text-xs uppercase tracking-[0.2em] text-zinc-500">{todayBlockInfo.blockEyebrow}</p><h3 className="mt-1 text-xl font-bold text-white">{todayBlockInfo.blockTitle}</h3></div>
+            <SpecialSeminarBanner day={todayViewDay} />
             {renderWorkshopList(todayWorkshops)}
 
             <div className="mt-8 grid gap-3 md:grid-cols-4">
@@ -2917,6 +2972,8 @@ if (ratedWorkshops.includes(workshopId)) {
             </div>
 
             <DancePartnerAppCard />
+
+            <HealthWellbeingCard />
 
             <FirstTimerGuide />
 
